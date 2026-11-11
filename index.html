@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>해양 구조대: 바다의 숨결을 지켜라! — 조석 양상과 사리·조금</title>
+<style>
+@font-face{font-family:'ACinema';src:local('a시네마L'),local('a시네마 L'),local('aCinemaL'),local('a시네마M'),local('a시네마');}
+:root{
+  --font:'ACinema','a시네마L','a시네마','aCinemaL','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  --bg1:#06223f;--bg2:#0b3a63;--card:#0f2f52;--card2:#123a63;--line:#2a5a8a;
+  --ink:#eaf6ff;--sub:#a9c9e6;--teal:#3de0c8;--sky:#6cc7ff;--red:#ff6b6b;--blue:#5aa8ff;
+  --yellow:#ffd166;--orange:#ff9f43;--purple:#c49bff;--green:#7be08a;--pink:#ff8fc7;
+}
+*{box-sizing:border-box;font-weight:400 !important;}
+html,body{margin:0;padding:0;}
+body{font-family:var(--font);color:var(--ink);background:radial-gradient(1200px 700px at 20% -10%,#14568c 0%,transparent 60%),linear-gradient(180deg,var(--bg1),#031427 80%);min-height:100vh;font-size:16px;line-height:1.6;}
+h1,h2,h3,h4{margin:0;font-weight:400;}
+button{font-family:var(--font);cursor:pointer;}
+input,textarea,select{font-family:var(--font);}
+.c-red{color:var(--red);} .c-blue{color:var(--blue);} .c-teal{color:var(--teal);} .c-yellow{color:var(--yellow);}
+.c-orange{color:var(--orange);} .c-purple{color:var(--purple);} .c-green{color:var(--green);} .c-pink{color:var(--pink);} .c-sub{color:var(--sub);}
+
+/* brand */
+.brand{position:absolute;top:10px;right:14px;z-index:60;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.95);border-radius:14px;padding:4px 12px 4px 4px;box-shadow:0 4px 16px rgba(0,0,0,.35);}
+.brand img{width:48px;height:48px;object-fit:contain;}
+.brand span{color:#0b3a63;font-size:13px;}
+
+header.top{padding:14px 20px 8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-right:260px;}
+.title{font-size:24px;color:var(--teal);letter-spacing:.5px;}
+.title small{display:block;font-size:13px;color:var(--sub);}
+nav.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:6px 20px 10px;}
+.tab{border:1px solid var(--line);background:#0c2a4a;color:var(--sub);border-radius:999px;padding:8px 16px;font-size:15px;transition:.2s;}
+.tab.active{background:linear-gradient(90deg,#1aa39a,#2b7fd8);color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(61,224,200,.45);}
+.tab.locked{opacity:.45;cursor:not-allowed;}
+.tab .st{margin-left:6px;}
+.progress{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--sub);font-size:14px;}
+.pbar{width:180px;height:10px;background:#0a223d;border-radius:99px;overflow:hidden;border:1px solid var(--line);}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--sky));transition:.5s;}
+
+main{padding:0 20px 40px;max-width:1400px;margin:0 auto;}
+.screen{display:none;animation:fade .35s ease;}
+.screen.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 28px rgba(0,0,0,.25);}
+.card h3{font-size:18px;color:var(--sky);margin-bottom:8px;}
+.grid{display:grid;gap:14px;}
+.btn{border:none;border-radius:12px;padding:10px 16px;font-size:15px;color:#062033;background:var(--teal);transition:.15s;}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none;}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn.red{background:var(--red);color:#fff;} .btn.blue{background:var(--blue);color:#fff;} .btn.yellow{background:var(--yellow);}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:9px;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+canvas{display:block;width:100%;height:auto;border-radius:14px;}
+input[type=range]{width:100%;accent-color:var(--teal);height:26px;}
+.slider-lab{display:flex;justify-content:space-between;color:var(--sub);font-size:13px;}
+
+/* helper */
+.helper{display:flex;gap:10px;align-items:flex-start;}
+.helper svg{flex:0 0 64px;}
+.bubble{position:relative;background:#fff;color:#0b2a46;border-radius:16px;padding:10px 14px;font-size:15px;flex:1;min-height:56px;}
+.bubble:before{content:'';position:absolute;left:-10px;top:18px;border:6px solid transparent;border-right:10px solid #fff;border-left:0;}
+.bubble .hl{color:#e2445c;} .bubble .hb{color:#1f6fd1;} .bubble .ht{color:#0a9a8a;}
+
+/* intro */
+.intro{max-width:900px;margin:30px auto;text-align:center;}
+.intro .hero{font-size:34px;color:var(--teal);margin:10px 0;}
+.intro p{color:var(--sub);}
+.intro .inputs{display:flex;gap:10px;justify-content:center;margin:18px 0;flex-wrap:wrap;}
+.intro input{background:#0a223d;border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:12px;font-size:16px;width:220px;}
+.mission-map{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0;}
+.mission-map div{background:#0a223d;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;color:var(--sub);}
+.mission-map div em{display:block;font-style:normal;font-size:26px;}
+
+/* stage1 */
+.s1grid{grid-template-columns:260px 1fr 320px;}
+.port{border:1px solid var(--line);background:#0a223d;border-radius:14px;padding:10px 12px;margin-bottom:10px;cursor:pointer;transition:.2s;position:relative;}
+.port:hover{border-color:var(--sky);}
+.port.sel{border-color:var(--teal);box-shadow:0 0 0 2px rgba(61,224,200,.35) inset;}
+.port .nm{font-size:17px;color:var(--yellow);}
+.port .lt{font-size:13px;color:var(--sub);}
+.port .badge{position:absolute;right:10px;top:10px;font-size:12px;padding:2px 8px;border-radius:99px;background:#183f68;color:var(--sub);}
+.port.clear .badge{background:#1e8f6a;color:#fff;}
+.readout{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0;}
+.readout div{background:#0a223d;border:1px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center;font-size:13px;color:var(--sub);}
+.readout div>span{display:block;font-size:19px;color:var(--ink);}
+.pattern-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+.pcard{background:#0a223d;border:2px solid var(--line);border-radius:12px;padding:8px;text-align:center;cursor:pointer;font-size:13px;color:var(--sub);transition:.15s;}
+.pcard svg{width:100%;height:46px;}
+.pcard.sel{border-color:var(--yellow);background:#163b60;color:var(--ink);}
+.pcard .pn{font-size:15px;color:var(--ink);}
+.cnt-btns button{min-width:64px;}
+.cnt-btns button.sel,.btn.ghost.sel{background:var(--yellow);color:#062033;}
+.fb{margin-top:8px;padding:10px 12px;border-radius:12px;font-size:14px;display:none;}
+.fb.show{display:block;}
+.fb.ok{background:rgba(61,224,200,.13);border:1px solid var(--teal);}
+.fb.no{background:rgba(255,107,107,.12);border:1px solid var(--red);}
+.fb.info{background:rgba(108,199,255,.12);border:1px solid var(--sky);}
+.cover{height:8px;background:#0a223d;border-radius:99px;overflow:hidden;margin:4px 0 2px;}
+.cover i{display:block;height:100%;background:var(--yellow);width:0;}
+.lockmsg{font-size:13px;color:var(--orange);}
+
+/* stage2 */
+.s2grid{grid-template-columns:minmax(360px,1.1fr) 1fr;}
+.cal{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;}
+.cell{background:#0a223d;border:1px solid var(--line);border-radius:10px;padding:4px 2px;text-align:center;font-size:11px;color:var(--sub);cursor:pointer;position:relative;min-height:74px;transition:.15s;}
+.cell:hover{border-color:var(--sky);}
+.cell.cur{border-color:var(--yellow);box-shadow:0 0 0 2px rgba(255,209,102,.35) inset;}
+.cell canvas{width:30px;height:30px;margin:2px auto;border-radius:50%;}
+.cell .q{display:block;width:30px;height:30px;margin:2px auto;border-radius:50%;background:#14365a;line-height:30px;color:#4d7298;}
+.cell .rng{font-size:11px;color:var(--teal);}
+.stk{position:absolute;top:-6px;right:-4px;font-size:11px;padding:1px 6px;border-radius:99px;color:#fff;}
+.stk.s{background:var(--red);} .stk.n{background:var(--blue);}
+.tools button.sel{outline:3px solid var(--yellow);}
+.gauge{height:18px;border-radius:99px;background:#0a223d;border:1px solid var(--line);overflow:hidden;}
+.gauge i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple),var(--red));transition:width .2s;}
+#glow{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .5s;}
+#glow.red{background:radial-gradient(circle at 50% 50%,transparent 35%,rgba(255,60,60,.55) 100%);}
+#glow.blue{background:radial-gradient(circle at 50% 50%,transparent 35%,rgba(60,140,255,.55) 100%);}
+#caption{position:fixed;left:50%;top:84px;transform:translateX(-50%) scale(.9);z-index:45;padding:12px 26px;border-radius:999px;font-size:21px;opacity:0;transition:.4s;pointer-events:none;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5);}
+#caption.show{opacity:1;transform:translateX(-50%) scale(1);}
+#caption.red{background:rgba(214,48,49,.92);} #caption.blue{background:rgba(32,98,214,.92);}
+
+/* quiz */
+.qcard{margin-bottom:12px;}
+.qcard .qn{color:var(--yellow);font-size:14px;}
+.qcard .qq{font-size:17px;margin:4px 0 8px;}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.opt{text-align:left;background:#0a223d;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:15px;}
+.opt:hover{border-color:var(--sky);}
+.opt.wrong{border-color:var(--red);color:var(--red);}
+.opt.right{border-color:var(--teal);color:var(--teal);background:rgba(61,224,200,.1);}
+textarea{width:100%;min-height:110px;background:#0a223d;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:10px;font-size:15px;line-height:1.6;resize:vertical;}
+.ess-fb{white-space:pre-line;}
+
+/* result */
+#resultCard{background:#fff;color:#18324d;border-radius:20px;padding:26px;max-width:1000px;margin:0 auto;}
+#resultCard h2{color:#0a7f74;font-size:26px;}
+.rhead{display:flex;align-items:center;gap:16px;border-bottom:2px dashed #cfe2f2;padding-bottom:14px;margin-bottom:14px;}
+.rhead img{width:70px;}
+.gradeBadge{margin-left:auto;width:110px;height:110px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:52px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.2);}
+.gradeBadge small{font-size:14px;}
+.rtable{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0;}
+.rtable th,.rtable td{border:1px solid #d6e6f3;padding:7px 8px;text-align:left;}
+.rtable th{background:#eef6fc;color:#2b5b85;}
+.rsec{margin-top:16px;}
+.rsec h4{color:#2b6fd1;font-size:18px;margin-bottom:6px;}
+.rsec p{margin:6px 0;}
+.r-red{color:#d63031;} .r-blue{color:#1f6fd1;} .r-teal{color:#0a8f80;} .r-orange{color:#e17000;} .r-purple{color:#7d4cd8;}
+.supp{background:#fff7e6;border:1px solid #ffd27a;border-radius:12px;padding:10px 12px;margin:8px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.supp .txt{flex:1;min-width:240px;}
+.essbox{background:#f3f8fd;border-radius:12px;padding:10px 12px;margin:6px 0;white-space:pre-wrap;}
+#suppBanner{display:none;position:sticky;top:0;z-index:50;margin:0 20px 10px;background:linear-gradient(90deg,#ff9f43,#ffd166);color:#3a2100;border-radius:14px;padding:10px 14px;box-shadow:0 6px 20px rgba(0,0,0,.35);}
+#suppBanner .row{justify-content:space-between;}
+#suppBanner .btn{background:#3a2100;color:#fff;}
+.modal{position:fixed;inset:0;background:rgba(0,10,25,.7);z-index:70;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal.show{display:flex;}
+.modal .card{max-width:640px;width:100%;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0a223d;border:1px solid var(--teal);color:var(--ink);padding:10px 18px;border-radius:12px;z-index:80;opacity:0;transition:.3s;pointer-events:none;}
+.toast.show{opacity:1;}
+.mini{font-size:13px;color:var(--sub);}
+.legend span{display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:13px;color:var(--sub);}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;}
+.why{background:#0a223d;border:1px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:13px;color:var(--sub);margin-top:8px;}
+
+@media (max-width:1150px){.s1grid{grid-template-columns:1fr 1fr;} .s1grid .center{grid-column:1/-1;order:-1;} .s2grid{grid-template-columns:1fr;} header.top{padding-right:20px;padding-top:70px;}}
+@media (max-width:700px){.s1grid{grid-template-columns:1fr;} .mission-map{grid-template-columns:1fr 1fr;} .opts{grid-template-columns:1fr;} .cal{grid-template-columns:repeat(6,1fr);} .readout{grid-template-columns:1fr 1fr;}}
+@media print{
+  body{background:#fff !important;}
+  body *{visibility:hidden;}
+  #resultCard,#resultCard *{visibility:visible;}
+  #resultCard{position:absolute;left:0;top:0;width:100%;max-width:none;box-shadow:none;border-radius:0;}
+  .noprint{display:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="brand"><img src="data:image/png;base64,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" alt="EARTH LJY 로고"><span>earthljy@ai.jne.kr</span></div>
+<div id="glow"></div>
+<div id="caption"></div>
+<div class="toast" id="toast"></div>
+
+<header class="top noprint">
+  <div class="title">해양 구조대: 바다의 숨결을 지켜라!<small>지구시스템과학 · Ⅱ. 해수의 운동과 순환 — 조석 양상(반일주조·일주조·혼합조)과 사리(대조)·조금(소조)</small></div>
+  <div class="progress">진행도 <div class="pbar"><i id="pbar"></i></div><span id="ptxt">0%</span></div>
+</header>
+<nav class="tabs noprint" id="tabs">
+  <button class="tab active" data-go="intro">출동 준비</button>
+  <button class="tab locked" data-go="s1" data-need="1">Stage 1 바다의 리듬<span class="st" id="st1"></span></button>
+  <button class="tab locked" data-go="s2" data-need="2">Stage 2 한 달 달력 대작전<span class="st" id="st2"></span></button>
+  <button class="tab locked" data-go="s3" data-need="3">Stage 3 구조대 자격 시험<span class="st" id="st3"></span></button>
+  <button class="tab locked" data-go="s4" data-need="4">미션 성공</button>
+</nav>
+<div id="suppBanner" class="noprint"><div class="row"><div id="suppText"></div><div class="row"><button class="btn sm" id="suppQuizBtn" style="display:none">보충 문제 풀기</button><button class="btn sm" id="suppBack">결과 화면으로 돌아가기</button></div></div></div>
+
+<main>
+<!-- INTRO -->
+<section class="screen active" id="intro">
+  <div class="intro card">
+    <svg width="110" height="110" viewBox="0 0 120 120" aria-hidden="true"><use href="#mulgyeol"/></svg>
+    <div class="hero">해양 구조대 출동 준비!</div>
+    <p>안녕! 나는 바다 도우미 <span class="c-teal">물결이</span>야. 세계 곳곳의 섬마다 바닷물이 오르내리는 <span class="c-yellow">리듬</span>이 서로 달라서 배들이 항구를 드나들기 어려워하고 있어.<br>
+    또 갯벌 체험단은 <span class="c-red">갯벌이 가장 넓게 열리는 날</span>을 알고 싶어 해. 구조대원으로서 바다의 숨결(조석)을 조사해 줘!</p>
+    <div class="mission-map">
+      <div><em>🏝️</em>Stage 1<br><span class="c-teal">세 섬의 24시간 해수면 관찰</span><br>반일주조·일주조·혼합조</div>
+      <div><em>🌕</em>Stage 2<br><span class="c-teal">달의 공전과 한 달 조차</span><br>사리(대조)·조금(소조)</div>
+      <div><em>📝</em>Stage 3<br><span class="c-teal">구조대 자격 시험</span><br>객관식 6문항 + 서술형 2문항</div>
+      <div><em>🏅</em>미션 성공<br><span class="c-teal">A~F 평가와 피드백</span><br>이미지·PDF 저장</div>
+    </div>
+    <div class="inputs">
+      <input id="inSid" placeholder="학번 (예: 20512)" maxlength="12">
+      <input id="inName" placeholder="이름" maxlength="12">
+    </div>
+    <button class="btn" id="startBtn" style="font-size:18px;padding:12px 30px">구조대 출동!</button>
+    <p class="mini" style="margin-top:14px">※ 시간 슬라이더, 재생 버튼, 달 끌기 등 여러 조작으로 직접 관찰해야 다음 단계가 열려요. 수행 과정은 모두 기록되어 마지막에 평가에 반영돼요.</p>
+  </div>
+</section>
+
+<!-- STAGE 1 -->
+<section class="screen" id="s1">
+  <div class="card" style="margin-bottom:14px">
+    <div class="helper">
+      <svg width="64" height="64" viewBox="0 0 120 120"><use href="#mulgyeol"/></svg>
+      <div class="bubble" id="bub1">이 바다는 하루에 물이 몇 번 들어오는지 <span class="ht">시계를 돌려</span> 확인해 볼까? 왼쪽에서 섬을 고르고, 아래 <span class="hb">시간 슬라이더</span>를 0시부터 24시까지 끝까지 움직여 봐!</div>
+      <button class="btn ghost sm" id="hint1">힌트 더 보기</button>
+    </div>
+  </div>
+  <div class="grid s1grid">
+    <div class="left">
+      <div class="card">
+        <h3>조사할 섬 고르기</h3>
+        <div id="portList"></div>
+        <div class="why">위도가 다른 세 섬이에요. 같은 날, 같은 달 아래에서도 섬마다 바닷물 리듬이 달라요. 왜일까요? 오른쪽 <span class="c-teal">지구 단면도</span>를 함께 보세요.</div>
+      </div>
+    </div>
+    <div class="center">
+      <div class="card">
+        <h3 id="harborTitle">항구 실시간 관찰</h3>
+        <canvas id="cvHarbor" data-w="680" data-h="300"></canvas>
+        <div class="readout">
+          <div>시각<span id="roTime">00:00</span></div>
+          <div>해수면 높이<span id="roH">-</span></div>
+          <div>바닷물 상태<span id="roState">-</span></div>
+          <div>발견한 만조 / 간조<span id="roCnt">0 / 0</span></div>
+        </div>
+        <div style="margin-top:6px">
+          <div class="slider-lab"><span>0시</span><span class="c-yellow">시간 가속 슬라이더</span><span>24시</span></div>
+          <input type="range" id="tSlider" min="0" max="24" step="0.05" value="0">
+          <div class="row" style="margin-top:4px">
+            <button class="btn sm" id="playBtn">▶ 재생</button>
+            <button class="btn ghost sm" data-spd="1.5">느리게</button>
+            <button class="btn ghost sm" data-spd="4">보통</button>
+            <button class="btn ghost sm" data-spd="9">빠르게</button>
+            <button class="btn ghost sm" id="resetT">처음부터</button>
+            <span class="mini">관찰 완료율</span><div class="cover" style="flex:1;min-width:120px"><i id="coverBar"></i></div><span class="mini" id="coverTxt">0%</span>
+          </div>
+        </div>
+        <h3 style="margin-top:12px">24시간 해수면 높이 그래프 <span class="mini">(슬라이더로 지나간 시간만 그려져요)</span></h3>
+        <canvas id="cvGraph1" data-w="680" data-h="230"></canvas>
+      </div>
+    </div>
+    <div class="right">
+      <div class="card">
+        <h3>왜 섬마다 다를까? — 지구 단면도</h3>
+        <canvas id="cvGlobe" data-w="320" data-h="280"></canvas>
+        <div class="mini" style="margin-top:6px">파란 타원은 달의 기조력으로 <span class="c-sky c-blue">부풀어 오른 바닷물</span>이에요. 노란 점(섬)은 지구가 자전하면서 <span class="c-yellow">위도선</span>을 따라 하루에 한 바퀴 돌아요.</div>
+        <div style="margin-top:8px">
+          <div class="slider-lab"><span>달의 적위 δ</span><span id="declTxt" class="c-orange">28.5°</span></div>
+          <input type="range" id="declSlider" min="0" max="28.5" step="0.5" value="28.5" disabled>
+          <div class="lockmsg" id="declLock">🔒 세 섬을 모두 판정하면 보너스 실험이 열려요.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3>조석 양상 판정</h3>
+        <div class="lockmsg" id="judgeLock">24시간을 95% 이상 관찰하면 판정할 수 있어요.</div>
+        <div class="mini" style="margin-top:6px">① 하루 동안 만조는 몇 번 나타났나요?</div>
+        <div class="row cnt-btns" style="margin:4px 0"><button class="btn ghost sm" data-cnt="1">1번</button><button class="btn ghost sm" data-cnt="2">2번</button><button class="btn ghost sm" data-cnt="3">3번 이상</button></div>
+        <div class="mini">② 물결 마크(조석 양상)를 고르세요.</div>
+        <div class="pattern-cards">
+          <div class="pcard" data-pat="semi"><svg viewBox="0 0 100 46"><path d="M2 23 Q14 2 26 23 T50 23 T74 23 T98 23" stroke="#3de0c8" stroke-width="3" fill="none"/></svg><div class="pn">쌍둥이 물결</div>반일주조</div>
+          <div class="pcard" data-pat="diurnal"><svg viewBox="0 0 100 46"><path d="M2 23 Q26 -14 50 23 T98 23" stroke="#ffd166" stroke-width="3" fill="none"/></svg><div class="pn">외톨이 물결</div>일주조</div>
+          <div class="pcard" data-pat="mixed"><svg viewBox="0 0 100 46"><path d="M2 26 Q14 -6 26 26 Q38 36 50 26 Q62 14 74 26 Q86 36 98 26" stroke="#ff8fc7" stroke-width="3" fill="none"/></svg><div class="pn">들쑥날쑥 물결</div>혼합조</div>
+        </div>
+        <button class="btn" id="judgeBtn" style="width:100%;margin-top:10px" disabled>판정하기</button>
+        <div class="fb" id="fb1"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="toS2" disabled>Stage 2로 이동 ▶</button></div>
+</section>
+
+<!-- STAGE 2 -->
+<section class="screen" id="s2">
+  <div class="card" style="margin-bottom:14px">
+    <div class="helper">
+      <svg width="64" height="64" viewBox="0 0 120 120"><use href="#mulgyeol"/></svg>
+      <div class="bubble" id="bub2">이번엔 한 달(음력 1일~30일) 동안의 바다야. <span class="hb">달의 공전 슬라이더</span>를 움직이거나, 왼쪽 그림에서 <span class="ht">달을 직접 끌어</span> 지구 둘레를 돌려 봐. 날마다 <span class="hl">조차</span>가 어떻게 달라지는지 살펴보자!</div>
+      <button class="btn ghost sm" id="hint2">힌트 더 보기</button>
+    </div>
+  </div>
+  <div class="grid s2grid">
+    <div class="card">
+      <h3>우주에서 본 지구·달·태양 (북극 위에서 내려다본 모습)</h3>
+      <canvas id="cvOrbit" data-w="560" data-h="470" style="touch-action:none"></canvas>
+      <div style="margin-top:6px">
+        <div class="slider-lab"><span>음력 1일</span><span class="c-yellow">달의 공전 슬라이더</span><span>30일</span></div>
+        <input type="range" id="dSlider" min="0.5" max="30.45" step="0.05" value="1">
+        <div class="row"><button class="btn sm" id="play2">▶ 한 달 재생</button><button class="btn ghost sm" id="prevDay">◀ 하루 전</button><button class="btn ghost sm" id="nextDay">하루 뒤 ▶</button>
+          <span class="legend"><span><i style="background:#ff9f43"></i>달의 기조력</span><span><i style="background:#ffd166"></i>태양의 기조력</span></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row" style="align-items:flex-start;gap:14px">
+        <div style="text-align:center"><canvas id="cvPhase" data-w="120" data-h="120" style="width:120px"></canvas><div id="phaseName" class="c-yellow" style="font-size:17px">삭</div><div class="mini">지구에서 본 달</div></div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:20px">음력 <span id="dayTxt" class="c-yellow">1</span>일</div>
+          <div class="mini">달-지구-태양이 이루는 각 <span id="angTxt" class="c-orange">0°</span></div>
+          <div style="margin-top:6px">오늘의 조차 <span id="rangeTxt" class="c-red" style="font-size:24px">-</span></div>
+          <div class="gauge"><i id="gaugeI"></i></div>
+          <div class="slider-lab"><span>작다(조금)</span><span>크다(사리)</span></div>
+          <div id="forceTxt" class="mini"></div>
+        </div>
+      </div>
+      <h3 style="margin-top:8px">오늘 하루 해수면 변화</h3>
+      <canvas id="cvDay" data-w="520" data-h="150"></canvas>
+      <h3 style="margin-top:8px">갯벌 단면 — 오늘 드러나는 갯벌 폭</h3>
+      <canvas id="cvFlat" data-w="520" data-h="110"></canvas>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>한 달 조석 기록 그래프 <span class="mini">(방문한 날만 기록돼요 · 방문 <span id="visitTxt">0</span>/30일)</span></h3>
+    <canvas id="cvMonth" data-w="1300" data-h="200"></canvas>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>미션: 달력에 스티커 붙이기</h3>
+    <p class="mini" style="margin:0 0 8px">갯벌 체험을 가장 넓게 할 수 있는 날(<span class="c-red">사리</span>) 2번, 바닷물 높이 변화가 가장 작은 날(<span class="c-blue">조금</span>) 2번을 찾아 스티커를 붙이세요. 스티커를 고른 뒤 날짜 칸을 누르면 붙어요. 칸을 누르면 그날로 이동해요.</p>
+    <div class="row tools" style="margin-bottom:8px">
+      <button class="btn red sm sel" data-tool="s">사리 스티커</button>
+      <button class="btn blue sm" data-tool="n">조금 스티커</button>
+      <button class="btn ghost sm" data-tool="x">지우개</button>
+      <button class="btn ghost sm" data-tool="go">날짜 이동만</button>
+      <button class="btn" id="judge2" style="margin-left:auto">스티커 판정하기</button>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="fb" id="fb2"></div>
+    <div id="phaseQ" style="display:none;margin-top:12px">
+      <div class="qq" style="font-size:16px">확인 문제: 스티커를 붙인 날의 달 모양을 보세요. <span class="c-red">사리</span>일 때 달의 위상 두 가지는?</div>
+      <div class="opts" id="phaseOpts" style="margin-top:6px"></div>
+      <div class="fb" id="fb2b"></div>
+    </div>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="toS3" disabled>Stage 3로 이동 ▶</button></div>
+</section>
+
+<!-- STAGE 3 -->
+<section class="screen" id="s3">
+  <div class="card" style="margin-bottom:14px">
+    <div class="helper">
+      <svg width="64" height="64" viewBox="0 0 120 120"><use href="#mulgyeol"/></svg>
+      <div class="bubble">마지막 관문, <span class="ht">구조대 자격 시험</span>이야! 틀리면 왜 틀렸는지 알려 줄 테니 다시 도전해. 객관식을 모두 맞히면 서술형 문항이 열려.</div>
+    </div>
+  </div>
+  <div id="quizBox"></div>
+  <div class="card" id="essayBox" style="display:none;margin-top:6px">
+    <h3>서술형 문항</h3>
+    <div class="qcard"><div class="qn">서술형 1</div><div class="qq">시뮬레이션에서 관찰한 <span class="c-teal">적도 산호섬(반일주조)</span>과 <span class="c-pink">온대 갯벌섬(혼합조)</span>의 그래프를 비교하여, 두 조석 양상의 <span class="c-yellow">공통점 1가지</span>와 <span class="c-yellow">차이점 1가지</span>를 ‘만조 횟수’와 ‘만조 높이’라는 말을 사용하여 쓰시오.</div>
+      <textarea id="e1" placeholder="예) 공통점은 … 차이점은 …"></textarea></div>
+    <div class="qcard"><div class="qn">서술형 2</div><div class="qq">갯벌이 가장 넓게 드러나는 <span class="c-red">사리(대조)</span> 때 조차가 커지는 까닭을 ‘달’, ‘태양’, ‘기조력’이라는 말을 사용하여 쓰시오.</div>
+      <textarea id="e2" placeholder="예) 사리 때는 달과 태양이 …"></textarea></div>
+    <button class="btn" id="submitEssay" style="width:100%">제출하고 미션 결과 보기</button>
+    <div class="fb" id="fbE"></div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="s4">
+  <div class="row noprint" style="justify-content:center;margin-bottom:12px">
+    <button class="btn" id="dlPng">🖼 결과 이미지(PNG) 저장</button>
+    <button class="btn yellow" id="dlPdf">📄 PDF로 저장(인쇄)</button>
+  </div>
+  <div id="resultCard"></div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="card" id="modalCard"></div></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="mgG" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#bff4ff"/><stop offset="1" stop-color="#2aa7e0"/></radialGradient>
+    <symbol id="mulgyeol" viewBox="0 0 120 120">
+      <path d="M60 8 C60 8 22 52 22 76 C22 98 40 112 60 112 C80 112 98 98 98 76 C98 52 60 8 60 8Z" fill="url(#mgG)" stroke="#0d6fa3" stroke-width="3"/>
+      <ellipse cx="44" cy="70" rx="7" ry="9" fill="#06223f"/><ellipse cx="76" cy="70" rx="7" ry="9" fill="#06223f"/>
+      <circle cx="46" cy="67" r="2.5" fill="#fff"/><circle cx="78" cy="67" r="2.5" fill="#fff"/>
+      <path d="M48 88 Q60 98 72 88" stroke="#06223f" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="34" cy="84" rx="6" ry="3.5" fill="#ff8fc7" opacity=".7"/><ellipse cx="86" cy="84" rx="6" ry="3.5" fill="#ff8fc7" opacity=".7"/>
+      <path d="M30 104 Q45 96 60 104 T90 104" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/>
+      <path d="M44 34 Q50 26 54 30" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+"use strict";
+/* ============ 공통 ============ */
+const FONT="'a시네마L','a시네마','aCinemaL','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif";
+const F=px=>px+'px '+FONT;
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const LOGO=document.querySelector('.brand img').src;
+function setup(cv){const w=+cv.dataset.w,h=+cv.dataset.h,dpr=Math.min(2,window.devicePixelRatio||1);cv.width=w*dpr;cv.height=h*dpr;const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);cv._w=w;cv._h=h;return c;}
+function ptr(cv,e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv._w/r.width,y:(e.clientY-r.top)*cv._h/r.height};}
+function hhmm(t){let h=Math.floor(t),m=Math.round((t-h)*60);if(m===60){h++;m=0;}return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function toast(msg){const t=$('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(t._k);t._k=setTimeout(()=>t.classList.remove('show'),2200);}
+function lerpCol(c1,c2,t){const a=c1.match(/\w\w/g).map(x=>parseInt(x,16)),b=c2.match(/\w\w/g).map(x=>parseInt(x,16));return'rgb('+a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')+')';}
+
+const S={name:'',sid:'',start:0,unlocked:1,
+  s1:{ports:{},hints:0,decl:false,done:false,judges:0},
+  s2:{visited:new Set(),stickers:{},wrong:0,retry:false,retryWrong:0,cleared:false,phaseDone:false,phaseFirst:null,hints:0,drags:0,zones:{spring:false,neap:false},done:false},
+  quiz:{first:{},solved:{},recovered:{},done:false},
+  essay:{e1:'',e2:'',r1:null,r2:null,revised:0,done:false},
+  supp:null};
+
+/* ============ 화면 이동 ============ */
+const ORDER=['intro','s1','s2','s3','s4'];
+let current='intro';
+function go(id){
+  const idx=ORDER.indexOf(id);
+  if(idx>0&&idx>S.unlocked&&!(id==='s4'&&S.essay.done)) return;
+  current=id;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.go===id));
+  if(id==='s1'){drawS1All();}
+  if(id==='s2'){updateS2();}
+  if(id==='s4'){renderResult();}
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress();
+}
+function updateTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{const n=+t.dataset.need||0;t.classList.toggle('locked',n>S.unlocked);});
+  $('st1').textContent=S.s1.done?' ✔':'';$('st2').textContent=S.s2.done?' ✔':'';$('st3').textContent=S.essay.done?' ✔':'';
+}
+function unlock(n){if(n>S.unlocked){S.unlocked=n;updateTabs();}}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{const n=+t.dataset.need||0;if(n>S.unlocked){toast('🔒 앞 단계를 먼저 완료하세요!');return;}go(t.dataset.go);}));
+function updateProgress(){
+  let p=0;const P=S.s1.ports;['eq','mid','pol'].forEach(k=>{if(P[k]&&P[k].cleared)p+=10;});
+  if(S.s1.decl)p+=5;if(S.s2.cleared)p+=15;if(S.s2.phaseDone)p+=5;
+  p+=Object.keys(S.quiz.solved).length*5;if(S.essay.done)p+=15;p=Math.min(100,p);
+  $('pbar').style.width=p+'%';$('ptxt').textContent=p+'%';
+}
+$('startBtn').onclick=()=>{
+  const n=$('inName').value.trim(),s=$('inSid').value.trim();
+  if(!n){toast('이름을 입력해 주세요!');$('inName').focus();return;}
+  S.name=n;S.sid=s;if(!S.start)S.start=Date.now();unlock(1);go('s1');
+};
+
+/* ============ STAGE 1 ============ */
+const PORTS=[
+  {id:'eq',name:'적도 산호섬',lat:0,zone:'저위도',ans:'semi',icon:'🏝️'},
+  {id:'mid',name:'온대 갯벌섬',lat:37,zone:'중위도',ans:'mixed',icon:'🦀'},
+  {id:'pol',name:'북극 빙하섬',lat:68,zone:'고위도',ans:'diurnal',icon:'🧊'}];
+PORTS.forEach(p=>S.s1.ports[p.id]={cleared:false,wrong:0,retry:false,retryWrong:0});
+const PATNAME={semi:'반일주조',diurnal:'일주조',mixed:'혼합조'};
+const T0=3,LDAY=24.84,DECL0=28.5;
+const s1={port:'eq',t:0,decl:DECL0,playing:false,speed:4,bins:new Array(481).fill(false),cnt:null,pat:null,ext:[]};
+const cvH=$('cvHarbor'),cvG=$('cvGraph1'),cvGl=$('cvGlobe');
+let cH=setup(cvH),cG=setup(cvG),cGl=setup(cvGl);
+const curPort=()=>PORTS.find(p=>p.id===s1.port);
+function tideH(t,lat,decl){const H=2*Math.PI*(t-T0)/LDAY,p=lat*Math.PI/180,d=decl*Math.PI/180;const c=Math.sin(p)*Math.sin(d)+Math.cos(p)*Math.cos(d)*Math.cos(H);return 3+4*(c*c-1/3);}
+const hNow=t=>tideH(t,curPort().lat,s1.decl);
+function computeExt(){
+  const N=4801,arr=[];for(let i=0;i<N;i++){const t=24*i/(N-1);arr.push(hNow(t));}
+  const ext=[];for(let i=1;i<N-1;i++){
+    if(arr[i]>arr[i-1]&&arr[i]>=arr[i+1])ext.push({t:24*i/(N-1),h:arr[i],type:'high'});
+    else if(arr[i]<arr[i-1]&&arr[i]<=arr[i+1])ext.push({t:24*i/(N-1),h:arr[i],type:'low'});}
+  s1.ext=ext;
+}
+function renderPorts(){
+  $('portList').innerHTML=PORTS.map(p=>{const st=S.s1.ports[p.id];
+    return `<div class="port ${p.id===s1.port?'sel':''} ${st.cleared?'clear':''}" data-p="${p.id}">
+      <div class="nm">${p.icon} ${p.name}</div><div class="lt">${p.zone} · 위도 ${p.lat}°</div>
+      <span class="badge">${st.cleared?PATNAME[p.ans]+' ✔':(st.retry?'보충 재판정':'미판정')}</span></div>`;}).join('');
+  document.querySelectorAll('.port').forEach(el=>el.onclick=()=>selectPort(el.dataset.p));
+}
+function resetObs(){s1.bins.fill(false);s1.t=0;$('tSlider').value=0;computeExt();s1.cnt=null;s1.pat=null;
+  document.querySelectorAll('[data-cnt]').forEach(b=>b.classList.remove('sel'));document.querySelectorAll('.pcard').forEach(b=>b.classList.remove('sel'));
+  $('fb1').className='fb';markBins(0,0);}
+function selectPort(id){s1.port=id;stopPlay();resetObs();renderPorts();
+  const p=curPort();$('harborTitle').textContent=`${p.icon} ${p.name} 항구 실시간 관찰 (${p.zone} ${p.lat}°)`;
+  bubble1(`<span class="ht">${p.name}</span>에 도착! 슬라이더를 0시부터 24시까지 움직이며 <span class="hb">만조(물이 가장 높을 때)</span>와 <span class="hl">간조(가장 낮을 때)</span>가 몇 번 오는지 세어 봐.`);
+  drawS1All();}
+function bubble1(h){$('bub1').innerHTML=h;}
+function markBins(a,b){const lo=Math.round(Math.min(a,b)*20),hi=Math.round(Math.max(a,b)*20);for(let i=lo;i<=hi;i++)s1.bins[i]=true;}
+function coverage(){return s1.bins.filter(Boolean).length/s1.bins.length;}
+function setT(t){const prev=s1.t;s1.t=clamp(t,0,24);if(Math.abs(s1.t-prev)<1.2)markBins(prev,s1.t);else markBins(s1.t,s1.t);$('tSlider').value=s1.t;drawS1All();checkDeclExp();}
+$('tSlider').addEventListener('input',e=>setT(+e.target.value));
+let raf1=null,last1=0;
+function loop1(ts){if(!s1.playing)return;const dt=last1?(ts-last1)/1000:0;last1=ts;let nt=s1.t+dt*s1.speed;if(nt>=24){nt=24;setT(nt);stopPlay();return;}setT(nt);raf1=requestAnimationFrame(loop1);}
+function stopPlay(){s1.playing=false;$('playBtn').textContent='▶ 재생';}
+$('playBtn').onclick=()=>{if(s1.playing){stopPlay();return;}if(s1.t>=24)setT(0);s1.playing=true;last1=0;$('playBtn').textContent='⏸ 멈춤';raf1=requestAnimationFrame(loop1);};
+document.querySelectorAll('[data-spd]').forEach(b=>b.onclick=()=>{s1.speed=+b.dataset.spd;document.querySelectorAll('[data-spd]').forEach(x=>x.classList.toggle('sel',x===b));toast('재생 속도: '+b.textContent);});
+$('resetT').onclick=()=>{stopPlay();s1.t=0;$('tSlider').value=0;drawS1All();};
+$('declSlider').addEventListener('input',e=>{s1.decl=+e.target.value;$('declTxt').textContent=s1.decl.toFixed(1)+'°';stopPlay();s1.bins.fill(false);s1.t=0;$('tSlider').value=0;computeExt();markBins(0,0);
+  if(s1.decl<=2)bubble1('달이 <span class="hb">적도 바로 위</span>에 왔어! 이제 각 섬에서 24시간을 다시 관찰해 봐. 리듬이 어떻게 바뀔까?');drawS1All();});
+function checkDeclExp(){if(!S.s1.decl&&S.s1.done&&s1.decl<=2&&coverage()>=0.95){S.s1.decl=true;updateProgress();
+  showFb('fb1','info',`🎉 <span class="c-yellow">보너스 실험 성공!</span> 달의 적위가 0°이면 부푼 바닷물이 적도를 중심으로 대칭이 되어, 섬이 지나가는 두 번의 만조 높이가 같아져요. 그래서 ${curPort().name}도 <span class="c-teal">반일주조</span>에 가까워져요. 즉, 혼합조·일주조는 달이 적도에서 남북으로 치우쳐(적위) 있기 때문에 생겨요.`);
+  bubble1('대단해! 달이 적도 위에 있으면 모든 섬이 <span class="ht">쌍둥이 물결(반일주조)</span>처럼 바뀌지? 달이 남북으로 치우치면(적위) 위도에 따라 리듬이 달라지는 거야.');
+  suppDone('decl');}}
+document.querySelectorAll('[data-cnt]').forEach(b=>b.onclick=()=>{s1.cnt=+b.dataset.cnt;document.querySelectorAll('[data-cnt]').forEach(x=>x.classList.toggle('sel',x===b));});
+document.querySelectorAll('.pcard').forEach(b=>b.onclick=()=>{s1.pat=b.dataset.pat;document.querySelectorAll('.pcard').forEach(x=>x.classList.toggle('sel',x===b));});
+function showFb(id,cls,html){const e=$(id);e.className='fb show '+cls;e.innerHTML=html;}
+const HINTS1=[
+  '만조는 그래프에서 <span class="hl">산봉우리</span>, 간조는 <span class="hb">골짜기</span>야. 그래프에 표시된 봉우리 개수를 세어 봐.',
+  '만조가 두 번이라면 두 봉우리의 <span class="ht">높이</span>를 비교해 봐. 거의 같으면 쌍둥이, 차이가 크면 들쑥날쑥이야.',
+  '지구 단면도에서 노란 점이 위도선을 따라 돌 때, 파란 부푼 물을 <span class="hb">두 번</span> 지나는지 <span class="hl">한 번</span>만 지나는지 보면 이유를 알 수 있어.'];
+let h1i=0;$('hint1').onclick=()=>{bubble1('💡 '+HINTS1[h1i%HINTS1.length]);h1i++;S.s1.hints++;};
+$('judgeBtn').onclick=()=>{
+  const p=curPort(),st=S.s1.ports[p.id];
+  if(Math.abs(s1.decl-DECL0)>0.01){showFb('fb1','info','판정은 오늘 달의 위치(적위 28.5°) 기준이에요. 달의 적위 슬라이더를 <span class="c-orange">28.5°</span>로 돌려 놓고 다시 관찰해 주세요.');return;}
+  if(st.cleared&&!st.retry){showFb('fb1','info','이미 판정을 마친 섬이에요. 다른 섬을 골라 주세요.');return;}
+  if(!s1.cnt||!s1.pat){showFb('fb1','info','만조 횟수와 물결 마크를 모두 골라 주세요.');return;}
+  S.s1.judges++;
+  const highs=s1.ext.filter(e=>e.type==='high'),truthCnt=highs.length,ok=s1.cnt===truthCnt&&s1.pat===p.ans;
+  if(ok){
+    if(st.retry){st.wrong=st.retryWrong;st.retry=false;suppDone('port_'+p.id);}
+    st.cleared=true;renderPorts();
+    const hs=highs.map(e=>e.h.toFixed(1)+'m').join(', ');
+    const msg={semi:`만조가 하루 <span class="c-yellow">2번</span>, 두 만조 높이(${hs})가 거의 같아요 → <span class="c-teal">반일주조(쌍둥이 물결)</span>`,
+      diurnal:`만조가 하루 <span class="c-yellow">1번</span>(${hs})만 나타나요 → <span class="c-teal">일주조(외톨이 물결)</span>`,
+      mixed:`만조가 하루 <span class="c-yellow">2번</span>이지만 높이(${hs})가 서로 달라요 → <span class="c-teal">혼합조(들쑥날쑥 물결)</span>`}[p.ans];
+    showFb('fb1','ok','✅ 정답! '+msg+`<br><span class="c-sub">참고: 만조에서 다음 만조까지의 조석 주기는 약 12시간 25분이라, 다음 날 만조 시각은 조금씩 늦어져요.</span>`);
+    bubble1(`${p.name}의 리듬을 찾았어! ${PORTS.filter(q=>!S.s1.ports[q.id].cleared).length?'다른 섬도 조사해 보자.':'세 섬을 모두 판정했어! 🎉'}`);
+    if(PORTS.every(q=>S.s1.ports[q.id].cleared)&&!S.s1.done){S.s1.done=true;unlock(2);$('toS2').disabled=false;$('declSlider').disabled=false;$('declLock').innerHTML='🧪 <span class="c-teal">보너스 실험 열림!</span> 달의 적위를 0°로 바꾸고 아무 섬이나 24시간 관찰해 보세요.';updateTabs();
+      setTimeout(()=>bubble1('세 섬 판정 완료! 🧪 <span class="ht">보너스 실험</span>: 오른쪽 <span class="hb">달의 적위</span>를 0°로 바꾸면 섬들의 리듬이 어떻게 변할까? (Stage 2도 열렸어!)'),1800);}
+  }else{
+    if(st.retry)st.retryWrong++;else st.wrong++;
+    let why='';
+    if(s1.cnt!==truthCnt)why=`그래프의 <span class="c-red">봉우리(만조)</span> 개수를 다시 세어 보세요. 24시간 동안 봉우리가 몇 개인가요?`;
+    else if(truthCnt===2&&p.ans==='mixed')why=`만조가 2번인 것은 맞아요! 하지만 두 만조의 높이(${highs.map(e=>e.h.toFixed(1)+'m').join(' vs ')})를 비교해 보세요. 높이가 크게 다르면 어떤 물결일까요?`;
+    else if(truthCnt===2&&p.ans==='semi')why=`만조가 2번인 것은 맞아요! 두 만조의 높이(${highs.map(e=>e.h.toFixed(1)+'m').join(' vs ')})가 거의 같다면 어떤 물결일까요?`;
+    else why=`만조가 1번뿐이면 하루에 한 번 오르내리는 물결이에요. 어떤 마크가 어울릴까요?`;
+    showFb('fb1','no','❌ 다시 생각해 봐요. '+why);
+  }
+  updateProgress();
+};
+function drawS1All(){drawHarbor();drawGraph1();drawGlobe();updateReadout();}
+function updateReadout(){
+  const t=s1.t,h=hNow(t),dh=hNow(Math.min(24,t+0.05))-hNow(Math.max(0,t-0.05));
+  $('roTime').textContent=hhmm(t);$('roH').textContent=h.toFixed(2)+' m';
+  const near=s1.ext.find(e=>Math.abs(e.t-t)<0.35);
+  let st=near?(near.type==='high'?'<span class="c-red">만조 (정조)</span>':'<span class="c-blue">간조 (정조)</span>'):(dh>0?'<span class="c-teal">밀물 ↑</span>':'<span class="c-orange">썰물 ↓</span>');
+  $('roState').innerHTML=st;
+  const seen=s1.ext.filter(e=>s1.bins[Math.round(e.t*20)]);
+  $('roCnt').innerHTML=`<span class="c-red">${seen.filter(e=>e.type==='high').length}</span> / <span class="c-blue">${seen.filter(e=>e.type==='low').length}</span>`;
+  const cv=coverage();$('coverBar').style.width=(cv*100).toFixed(0)+'%';$('coverTxt').textContent=(cv*100).toFixed(0)+'%';
+  const ready=cv>=0.95;$('judgeBtn').disabled=!ready;$('judgeLock').style.display=ready?'none':'block';
+  $('judgeLock').textContent=`24시간을 95% 이상 관찰하면 판정할 수 있어요. (현재 ${(cv*100).toFixed(0)}%)`;
+}
+const yOfH=m=>282-m*37;
+function bedH(x){return x<300?0.4:0.4+(x-300)/(680-300)*5.6;}
+function drawHarbor(){
+  const c=cH,W=680,Hh=300,t=s1.t,h=hNow(t),now=performance.now()/1000;
+  const day=clamp(Math.sin(Math.PI*(t-6)/12)*1.4+0.2,0,1);
+  const g=c.createLinearGradient(0,0,0,Hh);g.addColorStop(0,lerpCol('0a1838','5fb6ec',day));g.addColorStop(1,lerpCol('1d3b6b','d7f0ff',day));
+  c.fillStyle=g;c.fillRect(0,0,W,Hh);
+  if(day<0.5){c.fillStyle='rgba(255,255,255,'+(0.8*(1-day*2))+')';for(let i=0;i<40;i++){const sx=(i*137.5)%W,sy=(i*61.7)%140;c.fillRect(sx,sy,1.5,1.5);}}
+  if(t>5.5&&t<18.5){const a=Math.PI*(t-6)/12,sx=40+(t-6)/12*600,sy=170-Math.sin(a)*140;
+    const sg=c.createRadialGradient(sx,sy,4,sx,sy,40);sg.addColorStop(0,'rgba(255,230,120,1)');sg.addColorStop(1,'rgba(255,200,80,0)');c.fillStyle=sg;c.beginPath();c.arc(sx,sy,40,0,7);c.fill();c.fillStyle='#ffe27a';c.beginPath();c.arc(sx,sy,15,0,7);c.fill();}
+  const Hm=2*Math.PI*(t-T0)/LDAY,alt=Math.cos(Hm);
+  if(alt>-0.05){const mx=340+300*Math.sin(Hm),my=170-alt*140;c.fillStyle='rgba(230,240,255,.25)';c.beginPath();c.arc(mx,my,22,0,7);c.fill();c.fillStyle='#eef3ff';c.beginPath();c.arc(mx,my,12,0,7);c.fill();c.fillStyle='#c9d3e6';c.beginPath();c.arc(mx-3,my-2,3,0,7);c.arc(mx+4,my+3,2,0,7);c.fill();
+    c.fillStyle='#fff';c.font=F(13);c.fillText('달',mx+16,my+4);}
+  // water
+  const wy=yOfH(h);const wg=c.createLinearGradient(0,wy,0,Hh);wg.addColorStop(0,'#2fa4d8');wg.addColorStop(1,'#0b4f86');
+  c.fillStyle=wg;c.beginPath();c.moveTo(0,Hh);for(let x=0;x<=W;x+=8)c.lineTo(x,wy+Math.sin(x/30+now*2)*2.2);c.lineTo(W,Hh);c.closePath();c.fill();
+  // seabed
+  c.fillStyle='#7a5a3a';c.beginPath();c.moveTo(0,Hh);for(let x=0;x<=W;x+=10)c.lineTo(x,yOfH(bedH(x)));c.lineTo(W,Hh);c.closePath();c.fill();
+  // exposed flat
+  let ex0=null;for(let x=300;x<=W;x+=2){if(bedH(x)>h){ex0=x;break;}}
+  if(ex0!==null){c.fillStyle='#9c7650';c.beginPath();c.moveTo(ex0,yOfH(bedH(ex0)));for(let x=ex0;x<=W;x+=10)c.lineTo(x,yOfH(bedH(x)));c.lineTo(W,Hh);c.lineTo(ex0,Hh);c.closePath();c.fill();
+    c.fillStyle='rgba(255,255,255,.18)';for(let x=ex0+8;x<W-80;x+=26){const y=yOfH(bedH(x))+6;c.beginPath();c.ellipse(x,y,6,2,0,0,7);c.fill();}
+    if(W-80-ex0>60){c.fillStyle='#ffd8a8';c.font=F(14);c.fillText('드러난 갯벌 🦀',ex0+20,yOfH(bedH(ex0+40))+22);}}
+  // dune
+  c.fillStyle='#e6cf95';c.beginPath();c.moveTo(600,yOfH(bedH(600)));c.lineTo(680,yOfH(5.9));c.lineTo(680,Hh);c.lineTo(600,Hh);c.fill();
+  c.fillStyle='#4f9a5a';c.beginPath();c.moveTo(630,yOfH(5.6));c.quadraticCurveTo(650,yOfH(6.6),680,yOfH(6.2));c.lineTo(680,yOfH(5.8));c.fill();
+  // pier & ruler
+  c.fillStyle='#6b4a2b';c.fillRect(70,yOfH(6.6),10,Hh);c.fillRect(110,yOfH(6.6),10,Hh);c.fillStyle='#8a6238';c.fillRect(55,yOfH(6.6)-8,90,10);
+  c.fillStyle='rgba(255,255,255,.9)';c.fillRect(86,yOfH(6.3),20,yOfH(0)-yOfH(6.3));
+  c.font=F(11);for(let m=0;m<=6;m++){const y=yOfH(m);c.fillStyle='#d63031';c.fillRect(86,y-1,m%1===0?20:10,2);c.fillStyle='#fff';c.fillText(m+'m',58,y+4);}
+  c.fillStyle='#ffd166';c.beginPath();c.moveTo(110,wy);c.lineTo(122,wy-6);c.lineTo(122,wy+6);c.fill();
+  c.font=F(13);c.fillStyle='#ffd166';c.fillText(h.toFixed(2)+' m',126,wy-6);
+  // boat
+  const bx=400,bed=yOfH(bedH(bx)),draft=10;let by=wy+Math.sin(now*2)*1.5,tilt=Math.sin(now*1.6)*0.03,stranded=false;
+  if(by+draft>bed){by=bed-draft;tilt=0.12;stranded=true;}
+  c.save();c.translate(bx,by);c.rotate(tilt);c.fillStyle='#e74c3c';c.beginPath();c.moveTo(-36,0);c.lineTo(36,0);c.lineTo(26,draft);c.lineTo(-26,draft);c.closePath();c.fill();
+  c.fillStyle='#fff';c.fillRect(-14,-18,26,18);c.fillStyle='#5aa8ff';c.fillRect(-10,-14,8,7);c.fillRect(2,-14,7,7);c.fillStyle='#333';c.fillRect(-2,-34,3,16);
+  c.fillStyle='#ffd166';c.beginPath();c.moveTo(1,-34);c.lineTo(18,-28);c.lineTo(1,-22);c.fill();c.restore();
+  if(stranded){c.fillStyle='rgba(0,0,0,.55)';c.fillRect(bx-90,by-66,180,26);c.fillStyle='#ffd166';c.font=F(13);c.fillText('배가 갯벌에 얹혔어요! 밀물을 기다려요',bx-84,by-48);}
+  // clock
+  c.fillStyle='rgba(0,0,0,.4)';c.fillRect(W-150,10,140,34);c.fillStyle='#fff';c.font=F(20);c.fillText('🕒 '+hhmm(t),W-140,34);
+}
+function drawGraph1(){
+  const c=cG,W=680,Hh=230,L=46,R=14,T=14,B=34,gw=W-L-R,gh=Hh-T-B;
+  c.clearRect(0,0,W,Hh);c.fillStyle='#0a223d';c.fillRect(0,0,W,Hh);
+  const X=t=>L+t/24*gw,Y=m=>T+gh-(m/6)*gh;
+  c.strokeStyle='#1e4670';c.lineWidth=1;c.font=F(11);c.fillStyle='#a9c9e6';
+  for(let hr=0;hr<=24;hr+=3){c.beginPath();c.moveTo(X(hr),T);c.lineTo(X(hr),T+gh);c.stroke();c.fillText(hr+'시',X(hr)-8,Hh-14);}
+  for(let m=0;m<=6;m++){c.beginPath();c.moveTo(L,Y(m));c.lineTo(L+gw,Y(m));c.stroke();c.fillText(m+'m',14,Y(m)+4);}
+  c.fillText('시각',W-40,Hh-2);
+  c.strokeStyle='#ffd166';c.lineWidth=3;c.beginPath();let pen=false;
+  for(let i=0;i<s1.bins.length;i++){const t=i/20;if(s1.bins[i]){const x=X(t),y=Y(hNow(t));if(!pen){c.moveTo(x,y);pen=true;}else c.lineTo(x,y);}else pen=false;}
+  c.stroke();
+  s1.ext.forEach(e=>{if(!s1.bins[Math.round(e.t*20)])return;const x=X(e.t),y=Y(e.h),hi=e.type==='high';
+    c.fillStyle=hi?'#ff6b6b':'#5aa8ff';c.beginPath();c.arc(x,y,6,0,7);c.fill();c.font=F(12);
+    c.fillText((hi?'만조 ':'간조 ')+e.h.toFixed(1)+'m',clamp(x-30,L,W-90),hi?y-10:y+20);});
+  c.strokeStyle='rgba(255,255,255,.7)';c.setLineDash([4,4]);c.beginPath();c.moveTo(X(s1.t),T);c.lineTo(X(s1.t),T+gh);c.stroke();c.setLineDash([]);
+  c.fillStyle='#fff';c.beginPath();c.arc(X(s1.t),Y(hNow(s1.t)),5,0,7);c.fill();
+}
+function drawGlobe(){
+  const c=cGl,W=320,Hh=280,cx=140,cy=140,R=78,p=curPort(),d=s1.decl*Math.PI/180,lat=p.lat*Math.PI/180;
+  c.clearRect(0,0,W,Hh);c.fillStyle='#061a30';c.fillRect(0,0,W,Hh);
+  for(let i=0;i<30;i++){c.fillStyle='rgba(255,255,255,.5)';c.fillRect((i*97)%W,(i*53)%Hh,1.2,1.2);}
+  // moon direction
+  const mx=cx+150*Math.cos(d),my=cy-150*Math.sin(d);
+  c.strokeStyle='rgba(255,159,67,.6)';c.setLineDash([5,5]);c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+180*Math.cos(d),cy-180*Math.sin(d));c.stroke();c.setLineDash([]);
+  c.fillStyle='#eef3ff';c.beginPath();c.arc(Math.min(mx,300),my,10,0,7);c.fill();c.fillStyle='#ff9f43';c.font=F(12);c.fillText('달 방향',Math.min(mx,300)-40,my-14);
+  // bulge
+  c.save();c.translate(cx,cy);c.rotate(-d);c.fillStyle='rgba(90,168,255,.45)';c.beginPath();c.ellipse(0,0,R+30,R-4,0,0,7);c.fill();c.restore();
+  // earth
+  const eg=c.createRadialGradient(cx-25,cy-25,10,cx,cy,R);eg.addColorStop(0,'#5fb3e8');eg.addColorStop(1,'#1a5b96');c.fillStyle=eg;c.beginPath();c.arc(cx,cy,R,0,7);c.fill();
+  c.fillStyle='#4f9a5a';c.beginPath();c.ellipse(cx-20,cy-30,22,14,0.4,0,7);c.ellipse(cx+25,cy+20,16,26,-0.3,0,7);c.fill();
+  // axis & equator
+  c.strokeStyle='#fff';c.lineWidth=1.5;c.beginPath();c.moveTo(cx,cy-R-16);c.lineTo(cx,cy+R+16);c.stroke();c.fillStyle='#fff';c.font=F(11);c.fillText('자전축',cx+4,cy-R-6);
+  c.setLineDash([3,3]);c.strokeStyle='rgba(255,255,255,.6)';c.beginPath();c.moveTo(cx-R,cy);c.lineTo(cx+R,cy);c.stroke();c.setLineDash([]);c.fillText('적도',cx-R-30,cy+4);
+  // latitude line
+  const ly=cy-R*Math.sin(lat),lx=R*Math.cos(lat);
+  c.strokeStyle='#ffd166';c.lineWidth=2;c.beginPath();c.moveTo(cx-lx,ly);c.lineTo(cx+lx,ly);c.stroke();
+  c.fillStyle='#ffd166';c.fillText(p.name+' '+p.lat+'°',4,Math.max(12,ly-6));
+  // dot
+  const Hm=2*Math.PI*(s1.t-T0)/LDAY,dx=cx+lx*Math.cos(Hm),front=Math.sin(Hm)<=0;
+  c.beginPath();c.arc(dx,ly,7,0,7);if(front){c.fillStyle='#ffd166';c.fill();}else{c.strokeStyle='#ffd166';c.lineWidth=2;c.stroke();}
+  c.fillStyle='#a9c9e6';c.font=F(11);c.fillText(front?'● 앞면':'○ 뒷면',dx-14,ly+20);
+  c.fillStyle='#ff9f43';c.fillText('δ = '+s1.decl.toFixed(1)+'°',W-80,Hh-10);
+}
+
+/* ============ STAGE 2 ============ */
+const SYN=29.53;
+const s2={d:1,playing:false,tool:'s',drag:false,zone:null};
+const cvO=$('cvOrbit'),cvP=$('cvPhase'),cvD=$('cvDay'),cvF=$('cvFlat'),cvM=$('cvMonth');
+let cO=setup(cvO),cP=setup(cvP),cD=setup(cvD),cF=setup(cvF),cM=setup(cvM);
+function tide2(hr){const th=hr-12;return 4.5+2.8*(Math.cos(2*Math.PI*th/12.42)+0.46*Math.cos(2*Math.PI*th/12));}
+const MONTH=[];for(let i=0;i<=3600;i++){MONTH.push(tide2(i*0.2));}
+const RANGE={};for(let n=1;n<=30;n++){let mx=-1e9,mn=1e9;for(let i=(n-1)*120;i<=n*120;i++){mx=Math.max(mx,MONTH[i]);mn=Math.min(mn,MONTH[i]);}RANGE[n]={mx,mn,r:mx-mn};}
+const RMAX=Math.max(...Object.values(RANGE).map(o=>o.r)),RMIN=Math.min(...Object.values(RANGE).map(o=>o.r));
+const cellOf=d=>clamp(Math.floor(d+0.5),1,30);
+const phaseAng=d=>2*Math.PI*(d-1)/SYN;
+function phaseName(a){const deg=((a*180/Math.PI)%360+360)%360;
+  if(deg<12||deg>348)return'삭';if(deg<78)return'초승달';if(deg<102)return'상현달';if(deg<168)return'차오르는 달';if(deg<192)return'망 (보름달)';if(deg<258)return'기우는 달';if(deg<282)return'하현달';return'그믐달';}
+function sepDeg(d){const deg=((phaseAng(d)*180/Math.PI)%180+180)%180;return deg;}
+const isSpringDay=n=>{const s=sepDeg(n);return Math.min(s,180-s)<=18;};
+const isNeapDay=n=>Math.abs(sepDeg(n)-90)<=18;
+function drawPhase(c,cx,cy,r,a){
+  a=((a%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  c.fillStyle='#1b2638';c.beginPath();c.arc(cx,cy,r,0,7);c.fill();
+  const lit='#f4f1dc',dark='#1b2638',k=Math.cos(a),waxing=a<Math.PI;
+  c.fillStyle=lit;c.beginPath();if(waxing)c.arc(cx,cy,r,-Math.PI/2,Math.PI/2,false);else c.arc(cx,cy,r,Math.PI/2,-Math.PI/2,false);c.closePath();c.fill();
+  c.fillStyle=k>0?dark:lit;c.beginPath();c.ellipse(cx,cy,Math.abs(k)*r+0.01,r,0,0,7);c.fill();
+  c.strokeStyle='rgba(255,255,255,.25)';c.lineWidth=1;c.beginPath();c.arc(cx,cy,r,0,7);c.stroke();
+}
+function setD(d,from){s2.d=clamp(d,0.5,30.45);$('dSlider').value=s2.d;const n=cellOf(s2.d);if(!S.s2.visited.has(n)){S.s2.visited.add(n);if(S.supp&&S.supp.kind==='explore'&&S.s2.visited.size>=20)suppDone('explore');}updateS2();}
+$('dSlider').addEventListener('input',e=>setD(+e.target.value));
+$('prevDay').onclick=()=>setD(cellOf(s2.d)-1);$('nextDay').onclick=()=>setD(cellOf(s2.d)+1);
+let last2=0;
+function loop2(ts){if(!s2.playing)return;const dt=last2?(ts-last2)/1000:0;last2=ts;let nd=s2.d+dt*2.2;if(nd>=30.45){setD(30.45);stop2();return;}setD(nd);requestAnimationFrame(loop2);}
+function stop2(){s2.playing=false;$('play2').textContent='▶ 한 달 재생';}
+$('play2').onclick=()=>{if(s2.playing){stop2();return;}if(s2.d>=30.4)setD(0.5);s2.playing=true;last2=0;$('play2').textContent='⏸ 멈춤';requestAnimationFrame(loop2);};
+// drag moon
+const OC={x:280,y:240,R:170};
+function moonXY(d){const a=Math.PI+phaseAng(d);return{x:OC.x+OC.R*Math.cos(a),y:OC.y-OC.R*Math.sin(a)};}
+cvO.addEventListener('pointerdown',e=>{const p=ptr(cvO,e),m=moonXY(s2.d);if(Math.hypot(p.x-m.x,p.y-m.y)<34){s2.drag=true;S.s2.drags++;cvO.setPointerCapture(e.pointerId);stop2();}});
+cvO.addEventListener('pointermove',e=>{const p=ptr(cvO,e),m=moonXY(s2.d);cvO.style.cursor=Math.hypot(p.x-m.x,p.y-m.y)<34||s2.drag?'grab':'default';
+  if(!s2.drag)return;let a=Math.atan2(-(p.y-OC.y),p.x-OC.x)-Math.PI;a=((a%(2*Math.PI))+2*Math.PI)%(2*Math.PI);let d=1+a/(2*Math.PI)*SYN;if(d>30.45)d-=SYN;setD(d);});
+cvO.addEventListener('pointerup',()=>s2.drag=false);
+function zoneCheck(){
+  const s=sepDeg(s2.d),z=Math.min(s,180-s)<=8?'spring':(Math.abs(s-90)<=8?'neap':null);
+  const glow=$('glow'),cap=$('caption');
+  if(z!==s2.zone){s2.zone=z;
+    if(z==='spring'){glow.className='red';glow.style.opacity=1;cap.className='red show';cap.textContent='🔴 조차가 최대! 갯벌이 활짝 열렸어요! (사리·대조)';S.s2.zones.spring=true;}
+    else if(z==='neap'){glow.className='blue';glow.style.opacity=1;cap.className='blue show';cap.textContent='🔵 조차가 최소! 바닷물 높이 변화가 작아요 (조금·소조)';S.s2.zones.neap=true;}
+    else{glow.style.opacity=0;cap.classList.remove('show');}
+    clearTimeout(cap._k);if(z)cap._k=setTimeout(()=>{cap.classList.remove('show');glow.style.opacity=.35;},2200);}
+}
+function updateS2(){
+  if(current!=='s2'){return;}
+  const d=s2.d,n=cellOf(d),a=phaseAng(d),rg=RANGE[n];
+  $('dayTxt').textContent=n;$('phaseName').textContent=phaseName(a);
+  const sd=Math.round(((a*180/Math.PI)%360+360)%360);$('angTxt').textContent=(sd>180?360-sd:sd)+'°';
+  $('rangeTxt').textContent=rg.r.toFixed(1)+' m';$('gaugeI').style.width=((rg.r-RMIN+0.3)/(RMAX-RMIN+0.3)*100)+'%';
+  const s=sepDeg(d),ds=Math.min(s,180-s);
+  $('forceTxt').innerHTML=ds<25?'달과 태양이 <span class="c-red">일직선</span> → 두 천체의 기조력이 <span class="c-red">합쳐져요</span>':(Math.abs(s-90)<25?'달과 태양이 <span class="c-blue">직각</span> → 두 천체의 기조력이 <span class="c-blue">서로 상쇄돼요</span>':'달과 태양이 비스듬해요 → 조차가 중간 정도예요');
+  $('visitTxt').textContent=S.s2.visited.size;
+  drawOrbit();drawPhase(cP,60,60,50,a);drawDay();drawFlat();drawMonth();renderCal();zoneCheck();
+}
+function drawOrbit(){
+  const c=cO,W=560,Hh=470,d=s2.d,a=phaseAng(d);c.clearRect(0,0,W,Hh);c.fillStyle='#040f20';c.fillRect(0,0,W,Hh);
+  for(let i=0;i<70;i++){c.fillStyle='rgba(255,255,255,'+(0.3+((i*37)%7)/10)+')';c.fillRect((i*131)%W,(i*71)%Hh,1.3,1.3);}
+  // sun
+  const sg=c.createRadialGradient(-30,OC.y,20,-30,OC.y,120);sg.addColorStop(0,'#fff6b0');sg.addColorStop(.5,'#ffbf3f');sg.addColorStop(1,'rgba(255,140,0,0)');c.fillStyle=sg;c.beginPath();c.arc(-30,OC.y,120,0,7);c.fill();
+  c.fillStyle='#ffd166';c.font=F(15);c.fillText('태양',10,OC.y-90);
+  c.strokeStyle='rgba(255,209,102,.18)';c.lineWidth=1;for(let y=60;y<Hh;y+=45){c.beginPath();c.moveTo(80,y);c.lineTo(W-10,y);c.stroke();}
+  // orbit
+  c.strokeStyle='rgba(255,255,255,.25)';c.setLineDash([4,6]);c.beginPath();c.arc(OC.x,OC.y,OC.R,0,7);c.stroke();c.setLineDash([]);
+  // phase labels
+  c.font=F(12);c.fillStyle='#a9c9e6';[['삭',0],['상현',90],['망',180],['하현',270]].forEach(([t,deg])=>{const aa=Math.PI+deg*Math.PI/180;c.fillText(t,OC.x+(OC.R+24)*Math.cos(aa)-10,OC.y-(OC.R+24)*Math.sin(aa)+4);});
+  // bulge
+  const thM=Math.PI+a,thS=Math.PI,s=sepDeg(d),ds=Math.min(s,180-s),f=1-ds/90;
+  c.beginPath();for(let i=0;i<=120;i++){const th=i/120*2*Math.PI;const r=50+24*Math.cos(th-thM)**2+11*Math.cos(th-thS)**2;const x=OC.x+r*Math.cos(th),y=OC.y-r*Math.sin(th);i?c.lineTo(x,y):c.moveTo(x,y);}c.closePath();
+  c.fillStyle=f>0.5?`rgba(${Math.round(lerp(90,255,(f-.5)*2))},${Math.round(lerp(168,90,(f-.5)*2))},${Math.round(lerp(255,90,(f-.5)*2))},.55)`:`rgba(90,${Math.round(lerp(140,168,f*2))},255,.55)`;c.fill();
+  c.strokeStyle='rgba(255,255,255,.5)';c.stroke();
+  // earth
+  c.fillStyle='#2a7fc9';c.beginPath();c.arc(OC.x,OC.y,38,0,7);c.fill();c.fillStyle='#4f9a5a';c.beginPath();c.ellipse(OC.x-8,OC.y-10,12,8,.5,0,7);c.ellipse(OC.x+12,OC.y+12,9,13,0,0,7);c.fill();
+  c.fillStyle='rgba(0,0,20,.55)';c.beginPath();c.arc(OC.x,OC.y,38,-Math.PI/2,Math.PI/2);c.fill();
+  c.fillStyle='#fff';c.font=F(13);c.fillText('지구',OC.x-13,OC.y+56);
+  // force arrows
+  const arrow=(ang,len,col,lab,off)=>{const ex=OC.x+len*Math.cos(ang),ey=OC.y-len*Math.sin(ang);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=4;c.beginPath();c.moveTo(OC.x+40*Math.cos(ang),OC.y-40*Math.sin(ang));c.lineTo(ex,ey);c.stroke();
+    const hx=Math.cos(ang),hy=-Math.sin(ang);c.beginPath();c.moveTo(ex+hx*10,ey+hy*10);c.lineTo(ex-hy*7,ey+hx*7);c.lineTo(ex+hy*7,ey-hx*7);c.fill();c.font=F(12);c.fillText(lab,ex+hx*14-20,ey+hy*14+off);};
+  arrow(thM,120,'#ff9f43','달',4);arrow(thS,85,'#ffd166','태양',-8);
+  // moon
+  const m=moonXY(d);c.fillStyle='#2b3448';c.beginPath();c.arc(m.x,m.y,15,0,7);c.fill();c.fillStyle='#f4f1dc';c.beginPath();c.arc(m.x,m.y,15,Math.PI/2,-Math.PI/2);c.fill();
+  c.strokeStyle=s2.drag?'#ffd166':'rgba(255,255,255,.6)';c.lineWidth=2;c.beginPath();c.arc(m.x,m.y,21,0,7);c.stroke();
+  c.fillStyle='#fff';c.font=F(12);c.fillText('달 (끌어 보세요)',m.x-42,m.y-26);
+  // info
+  c.fillStyle='rgba(0,0,0,.45)';c.fillRect(W-200,10,190,52);c.fillStyle='#fff';c.font=F(14);c.fillText('음력 '+cellOf(d)+'일 · '+phaseName(a),W-190,32);
+  c.fillStyle=ds<25?'#ff6b6b':(Math.abs(s-90)<25?'#5aa8ff':'#a9c9e6');c.fillText(ds<25?'일직선 배열 → 사리':(Math.abs(s-90)<25?'직각 배열 → 조금':'비스듬한 배열'),W-190,52);
+}
+function drawDay(){
+  const c=cD,W=520,Hh=150,n=cellOf(s2.d),L=36,gw=W-L-10,gh=Hh-32;c.clearRect(0,0,W,Hh);c.fillStyle='#0a223d';c.fillRect(0,0,W,Hh);
+  const X=h=>L+h/24*gw,Y=m=>8+gh-(m/9)*gh;c.font=F(11);c.fillStyle='#a9c9e6';c.strokeStyle='#1e4670';
+  for(let h=0;h<=24;h+=6){c.beginPath();c.moveTo(X(h),8);c.lineTo(X(h),8+gh);c.stroke();c.fillText(h+'시',X(h)-8,Hh-8);}
+  for(let m=0;m<=9;m+=3){c.beginPath();c.moveTo(L,Y(m));c.lineTo(L+gw,Y(m));c.stroke();c.fillText(m+'m',6,Y(m)+4);}
+  c.strokeStyle='#3de0c8';c.lineWidth=2.5;c.beginPath();for(let i=0;i<=120;i++){const hr=(n-1)*24+i*0.2;const x=X(i*0.2),y=Y(tide2(hr));i?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();
+  const r=RANGE[n];c.strokeStyle='rgba(255,107,107,.7)';c.setLineDash([4,4]);c.beginPath();c.moveTo(L,Y(r.mx));c.lineTo(L+gw,Y(r.mx));c.moveTo(L,Y(r.mn));c.lineTo(L+gw,Y(r.mn));c.stroke();c.setLineDash([]);
+  c.fillStyle='#ff6b6b';c.fillText('조차 '+r.r.toFixed(1)+'m',L+gw-70,Y((r.mx+r.mn)/2)+4);
+}
+function drawFlat(){
+  const c=cF,W=520,Hh=110,n=cellOf(s2.d),r=RANGE[n];c.clearRect(0,0,W,Hh);
+  const sk=c.createLinearGradient(0,0,0,Hh);sk.addColorStop(0,'#cfeeff');sk.addColorStop(1,'#9fd6f5');c.fillStyle=sk;c.fillRect(0,0,W,Hh);
+  const bx=m=>20+m/9*(W-40),yM=m=>100-m*9.5;
+  // low-tide water
+  c.fillStyle='rgba(30,120,200,.85)';c.beginPath();c.moveTo(0,Hh);c.lineTo(0,yM(r.mn));c.lineTo(bx(r.mn),yM(r.mn));c.lineTo(bx(0),yM(0));c.lineTo(bx(0),Hh);c.closePath();c.fill();
+  // bed
+  c.fillStyle='#8a6440';c.beginPath();c.moveTo(0,Hh);c.lineTo(bx(0),yM(0));c.lineTo(bx(9),yM(9));c.lineTo(W,yM(9));c.lineTo(W,Hh);c.closePath();c.fill();
+  // exposed mudflat strip
+  c.strokeStyle='#ffd166';c.lineWidth=7;c.beginPath();c.moveTo(bx(r.mn),yM(r.mn));c.lineTo(bx(r.mx),yM(r.mx));c.stroke();
+  // high tide line
+  c.strokeStyle='#d63031';c.lineWidth=2;c.setLineDash([5,4]);c.beginPath();c.moveTo(0,yM(r.mx));c.lineTo(bx(r.mx),yM(r.mx));c.stroke();c.setLineDash([]);
+  c.font=F(12);c.fillStyle='#d63031';c.fillText('만조 때 해수면',6,yM(r.mx)-4);
+  c.fillStyle='#fff';c.fillText('간조 때 바다',6,Hh-6);
+  const wdt=bx(r.mx)-bx(r.mn);c.fillStyle='#5a3a00';c.fillText('노란 띠 = 간조 때 드러나는 갯벌 ('+(wdt>380?'아주 넓음':wdt>260?'보통':'좁음')+')',W-250,14);
+}
+function drawMonth(){
+  const c=cM,W=1300,Hh=200,L=40,gw=W-L-10,gh=Hh-36;c.clearRect(0,0,W,Hh);c.fillStyle='#0a223d';c.fillRect(0,0,W,Hh);
+  const X=hr=>L+hr/720*gw,Y=m=>8+gh-(m/9)*gh;c.font=F(11);
+  for(let n=1;n<=30;n++){const x0=X((n-1)*24),x1=X(n*24);if(!S.s2.visited.has(n)){c.fillStyle='rgba(255,255,255,.04)';c.fillRect(x0,8,x1-x0,gh);}
+    c.fillStyle=n===cellOf(s2.d)?'#ffd166':'#a9c9e6';c.fillText(n,(x0+x1)/2-5,Hh-12);
+    const st=S.s2.stickers[n];if(st){c.fillStyle=st==='s'?'rgba(255,107,107,.18)':'rgba(90,168,255,.18)';c.fillRect(x0,8,x1-x0,gh);}}
+  c.strokeStyle='#1e4670';for(let m=0;m<=9;m+=3){c.beginPath();c.moveTo(L,Y(m));c.lineTo(L+gw,Y(m));c.stroke();c.fillStyle='#a9c9e6';c.fillText(m+'m',6,Y(m)+4);}
+  c.strokeStyle='#3de0c8';c.lineWidth=1.2;c.beginPath();let pen=false;
+  for(let i=0;i<MONTH.length;i++){const hr=i*0.2,n=clamp(Math.floor(hr/24)+1,1,30);if(S.s2.visited.has(n)){const x=X(hr),y=Y(MONTH[i]);pen?c.lineTo(x,y):c.moveTo(x,y);pen=true;}else pen=false;}c.stroke();
+  const cx=X((cellOf(s2.d)-0.5)*24);c.strokeStyle='rgba(255,209,102,.8)';c.setLineDash([4,4]);c.beginPath();c.moveTo(cx,8);c.lineTo(cx,8+gh);c.stroke();c.setLineDash([]);
+  c.fillStyle='#a9c9e6';c.fillText('음력 날짜',W-60,Hh-1);
+}
+function renderCal(){
+  const cal=$('cal'),cur=cellOf(s2.d);
+  if(!cal.children.length){for(let n=1;n<=30;n++){const d=document.createElement('div');d.className='cell';d.dataset.n=n;d.onclick=()=>calClick(n);cal.appendChild(d);}}
+  [...cal.children].forEach(el=>{const n=+el.dataset.n,v=S.s2.visited.has(n),st=S.s2.stickers[n];
+    el.classList.toggle('cur',n===cur);
+    const key=`${v}|${st||''}`;if(el._k===key)return;el._k=key;
+    el.innerHTML=`<div>${n}일</div>${v?'<canvas width="60" height="60"></canvas>':'<span class="q">?</span>'}<div class="rng">${v?RANGE[n].r.toFixed(1)+'m':'&nbsp;'}</div>${st?`<span class="stk ${st}">${st==='s'?'사리':'조금'}</span>`:''}`;
+    if(v){const cv=el.querySelector('canvas'),cc=cv.getContext('2d');drawPhase(cc,30,30,26,phaseAng(n));}});
+}
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{s2.tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('sel',x===b));});
+function calClick(n){
+  if(s2.tool==='go'){setD(n);return;}
+  if(S.s2.cleared&&!S.s2.retry){setD(n);toast('스티커 미션은 이미 완료했어요.');return;}
+  if(!S.s2.visited.has(n)){setD(n);toast('먼저 그날을 방문해 조차를 확인했어요. 한 번 더 누르면 스티커가 붙어요.');return;}
+  if(s2.tool==='x'){delete S.s2.stickers[n];}
+  else{const same=Object.entries(S.s2.stickers).filter(([k,v])=>v===s2.tool).length;
+    if(S.s2.stickers[n]===s2.tool)delete S.s2.stickers[n];
+    else if(same>=2){toast((s2.tool==='s'?'사리':'조금')+' 스티커는 2장까지만 붙일 수 있어요.');return;}
+    else S.s2.stickers[n]=s2.tool;}
+  setD(n);
+}
+$('judge2').onclick=()=>{
+  if(S.s2.cleared&&!S.s2.retry){showFb('fb2','info','이미 스티커 미션을 완료했어요.');return;}
+  const sp=Object.keys(S.s2.stickers).filter(k=>S.s2.stickers[k]==='s').map(Number).sort((a,b)=>a-b);
+  const np=Object.keys(S.s2.stickers).filter(k=>S.s2.stickers[k]==='n').map(Number).sort((a,b)=>a-b);
+  if(sp.length!==2||np.length!==2){showFb('fb2','info',`사리 스티커 2장, 조금 스티커 2장을 모두 붙여 주세요. (현재 사리 ${sp.length}장, 조금 ${np.length}장)`);return;}
+  const errs=[];
+  sp.forEach(n=>{if(!isSpringDay(n))errs.push(`음력 ${n}일(조차 ${RANGE[n].r.toFixed(1)}m)은 <span class="c-red">사리</span>가 아니에요. 조차가 <span class="c-red">가장 큰</span> 날을 찾아 보세요.`);});
+  np.forEach(n=>{if(!isNeapDay(n))errs.push(`음력 ${n}일(조차 ${RANGE[n].r.toFixed(1)}m)은 <span class="c-blue">조금</span>이 아니에요. 조차가 <span class="c-blue">가장 작은</span> 날을 찾아 보세요.`);});
+  if(!errs.length){if(sp[1]-sp[0]<10)errs.push('두 사리 스티커가 같은 시기에 붙어 있어요. 사리는 한 달에 <span class="c-red">두 번</span>, 약 15일 간격으로 와요.');
+    if(np[1]-np[0]<10)errs.push('두 조금 스티커가 같은 시기에 붙어 있어요. 조금도 한 달에 <span class="c-blue">두 번</span>, 약 15일 간격으로 와요.');}
+  if(errs.length){if(S.s2.retry)S.s2.retryWrong++;else S.s2.wrong++;showFb('fb2','no','❌ '+errs.join('<br>❌ ')+'<br><span class="c-sub">힌트: 아래 한 달 그래프에서 물결의 폭이 가장 넓은 곳과 가장 좁은 곳을 찾아 보세요.</span>');
+    $('bub2').innerHTML='그래프의 <span class="hl">폭이 가장 넓은 곳</span>이 사리, <span class="hb">가장 좁은 곳</span>이 조금이야. 그때 왼쪽 그림에서 달과 태양의 배열도 꼭 확인해!';return;}
+  if(S.s2.retry){S.s2.wrong=S.s2.retryWrong;S.s2.retry=false;suppDone('stickers');}
+  S.s2.cleared=true;
+  showFb('fb2','ok',`✅ 완벽해요! 사리는 음력 <span class="c-red">${sp.join('일, ')}일</span>, 조금은 음력 <span class="c-blue">${np.join('일, ')}일</span>이에요. 사리와 조금은 약 <span class="c-yellow">15일(반달) 간격</span>으로 번갈아 나타나요.<br><span class="c-sub">참고: 실제 바다에서는 해저 지형과 마찰 때문에 사리가 삭·망보다 1~2일 늦게 나타나기도 해요.</span>`);
+  if(!S.s2.phaseDone){$('phaseQ').style.display='block';renderPhaseQ();}
+  updateProgress();checkS2Done();
+};
+const PQ={opts:['삭, 망','상현, 하현','삭, 상현','망, 하현'],a:0,fb:{1:'상현·하현일 때는 달과 태양이 직각을 이뤄 기조력이 상쇄돼요 → 조금이에요.',2:'상현은 조금 때의 위상이에요. 스티커를 붙인 날의 달 모양을 다시 보세요.',3:'하현은 조금 때의 위상이에요. 사리 날의 달 모양을 다시 확인해 보세요.'}};
+function renderPhaseQ(){const box=$('phaseOpts');box.innerHTML='';PQ.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=(i+1)+') '+o;
+  b.onclick=()=>{if(S.s2.phaseDone)return;if(i===PQ.a){if(S.s2.phaseFirst===null)S.s2.phaseFirst=true;S.s2.phaseDone=true;b.classList.add('right');
+      showFb('fb2b','ok','✅ 정답! 삭(그믐 직후 안 보이는 달)과 망(보름달)일 때 달-지구-태양이 <span class="c-red">일직선</span>이 되어 두 천체의 기조력이 합쳐져 사리가 나타나요.');updateProgress();checkS2Done();if(S.supp&&S.supp.kind==='phase')suppDone('phase');}
+    else{if(S.s2.phaseFirst===null)S.s2.phaseFirst=false;b.classList.add('wrong');showFb('fb2b','no','❌ '+PQ.fb[i]);}};box.appendChild(b);});}
+function checkS2Done(){if(S.s2.cleared&&S.s2.phaseDone&&!S.s2.done){S.s2.done=true;unlock(3);$('toS3').disabled=false;updateTabs();$('bub2').innerHTML='Stage 2 클리어! 🎉 이제 <span class="ht">구조대 자격 시험</span>이 열렸어.';}}
+const HINTS2=['슬라이더를 처음부터 끝까지 움직이면서 <span class="hl">오늘의 조차</span> 숫자가 언제 가장 커지는지 확인해 봐.','달이 태양 쪽(삭) 또는 정반대 쪽(망)에 있으면 두 기조력 화살표가 <span class="hl">한 줄</span>이 돼.','달이 상현·하현에 있으면 기조력 화살표가 <span class="hb">직각</span>이 되어 서로 방해해.'];
+let h2i=0;$('hint2').onclick=()=>{$('bub2').innerHTML='💡 '+HINTS2[h2i%HINTS2.length];h2i++;S.s2.hints++;};
+$('toS2').onclick=()=>go('s2');$('toS3').onclick=()=>go('s3');
+
+/* ============ STAGE 3 ============ */
+const QUIZ=[
+ {q:'하루(24시간) 동안 만조와 간조가 약 두 번씩 나타나며, 두 번의 만조 높이가 거의 비슷한 조석 양상은?',o:['일주조','반일주조','혼합조','조금조'],a:1,st:1,
+  fb:{0:'일주조는 하루에 만조·간조가 한 번씩만 나타나요. 북극 빙하섬 그래프를 떠올려 보세요.',2:'혼합조도 하루 두 번이지만 두 만조의 높이가 서로 달라요(들쑥날쑥 물결).',3:"'조금조'라는 조석 양상은 없어요. 조금은 한 달 중 조차가 가장 작은 시기의 이름이에요."},
+  ex:'반일주조 = 쌍둥이 물결! 하루 2번, 높이가 비슷해요. 적도 산호섬(저위도)에서 관찰했어요.'},
+ {q:'시뮬레이션의 북극 빙하섬(고위도)처럼 하루 동안 만조와 간조가 한 번씩만 나타나는 조석 양상은?',o:['반일주조','혼합조','일주조','사리'],a:2,st:1,
+  fb:{0:'반일주조는 하루에 만조가 두 번이에요.',1:'혼합조는 하루에 만조가 두 번이지만 높이가 달라요.',3:'사리는 한 달 중 조차가 가장 큰 시기예요. 하루의 조석 양상과는 다른 개념이에요.'},
+  ex:'일주조 = 외톨이 물결! 하루에 만조 1번, 간조 1번이에요.'},
+ {q:'온대 갯벌섬(중위도)에서 하루에 만조가 두 번 나타났지만, 첫 번째 만조와 두 번째 만조의 높이가 크게 달랐다. 이 조석 양상은?',o:['혼합조','반일주조','일주조','정조'],a:0,st:1,
+  fb:{1:'반일주조는 두 만조의 높이가 거의 같아요.',2:'일주조는 하루에 만조가 한 번뿐이에요.',3:'정조는 만조나 간조 때 바닷물의 흐름이 잠시 멈추는 때예요.'},
+  ex:'혼합조 = 들쑥날쑥 물결! 하루 2번이지만 연속된 두 만조(간조)의 높이가 달라요.'},
+ {q:'한 달 중에서 지구, 달, 태양의 위치가 일직선이 될 때, 조차(만조와 간조의 높이 차)가 가장 큰 시기는?',o:['조금(소조)','사리(대조)','정조','만조'],a:1,st:2,
+  fb:{0:'조금은 달과 태양이 직각일 때로 조차가 가장 작아요.',2:'정조는 바닷물 흐름이 잠시 멈추는 때로, 한 달 주기의 개념이 아니에요.',3:'만조는 하루 중 해수면이 가장 높을 때예요.'},
+  ex:'사리(대조): 일직선 → 기조력 합쳐짐 → 조차 최대, 갯벌이 가장 넓게 드러나요.'},
+ {q:'시뮬레이션 Stage 2에서 달과 태양이 직각을 이루어 서로의 힘을 방해할 때, 해수면의 높낮이 차(조차)는 어떻게 변했나요?',o:['조차가 매우 커진다.','조차가 작아진다(조금·소조).','바닷물이 아예 멈춘다.','해수면 높이가 일정해진다.'],a:1,st:2,
+  fb:{0:'조차가 커지는 것은 일직선일 때(사리)예요.',2:'조금 때도 밀물과 썰물은 계속 일어나요. 변화의 폭만 작아져요.',3:'조금 때도 만조와 간조는 나타나요. 높이 차가 작아질 뿐이에요.'},
+  ex:'직각 배열 → 두 기조력이 서로 상쇄 → 조차 최소(조금).'},
+ {q:'사리(대조)가 나타날 때 지구에서 본 달의 위상으로 옳게 짝지은 것은?',o:['삭, 망','상현, 하현','삭, 상현','망, 하현'],a:0,st:2,
+  fb:{1:'상현·하현은 달과 태양이 직각인 조금 때예요.',2:'상현은 조금 때의 위상이에요.',3:'하현은 조금 때의 위상이에요.'},
+  ex:'삭과 망일 때 달-지구-태양이 일직선 → 사리!'}];
+function renderQuiz(){
+  $('quizBox').innerHTML=QUIZ.map((q,i)=>`<div class="card qcard" id="q${i}"><div class="qn">객관식 ${i+1}</div><div class="qq">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-q="${i}" data-o="${j}">${'①②③④'[j]} ${o}</button>`).join('')}</div><div class="fb" id="qfb${i}"></div></div>`).join('');
+  document.querySelectorAll('#quizBox .opt').forEach(b=>b.onclick=()=>answerQ(+b.dataset.q,+b.dataset.o,b));
+}
+function answerQ(i,j,b){
+  const q=QUIZ[i];if(S.quiz.solved[i])return;
+  if(j===q.a){if(S.quiz.first[i]===undefined)S.quiz.first[i]=true;S.quiz.solved[i]=true;b.classList.add('right');showFb('qfb'+i,'ok','✅ 정답! '+q.ex);}
+  else{if(S.quiz.first[i]===undefined)S.quiz.first[i]=false;b.classList.add('wrong');showFb('qfb'+i,'no','❌ '+q.fb[j]+' 다시 골라 보세요.');}
+  updateProgress();
+  if(QUIZ.every((_,k)=>S.quiz.solved[k])&&!S.quiz.done){S.quiz.done=true;$('essayBox').style.display='block';setTimeout(()=>$('essayBox').scrollIntoView({behavior:'smooth'}),400);toast('객관식 통과! 서술형 문항이 열렸어요.');}
+}
+const ESS={
+ e1:{groups:[{k:['두 번','두번','2번','2회','두 차례','2차례','둘'],need:'공통점: 두 양상 모두 하루에 만조(간조)가 <span class="r-teal">두 번</span> 나타나요.'},
+            {k:['비슷','같','일정','똑같'],need:'반일주조는 두 만조의 높이가 <span class="r-teal">비슷(같음)</span>해요.'},
+            {k:['다르','다름','달라','차이','불규칙','들쑥날쑥'],need:'혼합조는 두 만조의 높이가 서로 <span class="r-teal">달라요</span>.'}],
+     model:'모범 답안: 공통점은 반일주조와 혼합조 모두 하루에 만조가 두 번 나타난다는 것이다. 차이점은 반일주조는 두 만조의 높이가 비슷하지만, 혼합조는 두 만조의 높이가 서로 다르다는 것이다.'},
+ e2:{groups:[{k:['일직선','같은 방향','반대 방향','나란','한 줄','한줄','정렬','일렬'],need:'사리 때 달과 태양이 지구에 대해 <span class="r-teal">일직선</span>(같은 방향 또는 반대 방향)에 놓여요.'},
+            {k:['기조력','힘','당기'],need:'조석을 일으키는 <span class="r-teal">기조력</span>이라는 말을 사용해야 해요.'},
+            {k:['합쳐','더해','합해','커지','커진','강해','증가','최대','크게'],need:'두 천체의 기조력이 <span class="r-teal">합쳐져(더해져)</span> 커져요.'}],
+     model:'모범 답안: 사리 때는 달과 태양이 지구를 기준으로 일직선(같은 방향 또는 반대 방향)에 놓여, 달과 태양의 기조력이 합쳐져 커지기 때문에 조차가 가장 커진다.'}};
+function evalEssay(key,txt){const g=ESS[key].groups,t=txt.replace(/\s+/g,' ');const hit=g.map(x=>x.k.some(k=>t.includes(k)));return{hit,score:hit.filter(Boolean).length*4,miss:g.filter((_,i)=>!hit[i]).map(x=>x.need)};}
+$('submitEssay').onclick=()=>{
+  const a=$('e1').value.trim(),b=$('e2').value.trim();
+  if(a.length<10||b.length<10){showFb('fbE','info','두 문항 모두 10자 이상 써 주세요. 시뮬레이션에서 본 것을 떠올리며 자신의 말로 써 보세요!');return;}
+  S.essay.e1=a;S.essay.e2=b;S.essay.r1=evalEssay('e1',a);S.essay.r2=evalEssay('e2',b);S.essay.done=true;unlock(4);updateTabs();updateProgress();go('s4');
+};
+
+/* ============ 평가 ============ */
+function scoreItems(){
+  const P=S.s1.ports,items=[];
+  PORTS.forEach(p=>{const w=P[p.id].wrong,pt=P[p.id].cleared?Math.max(2,6-2*w):0;
+    items.push({key:'port_'+p.id,area:'Stage 1',name:`${p.name} 조석 양상 판정`,pt,max:6,
+      note:w?`오답 ${w}회 후 정답`:'한 번에 정답',lack:pt<6?`${p.name}의 24시간 그래프에서 만조 횟수와 두 만조의 높이를 다시 비교해 보세요.`:null,stage:'s1'});});
+  items.push({key:'decl',area:'Stage 1',name:'보너스: 달의 적위 실험',pt:S.s1.decl?4:0,max:4,note:S.s1.decl?'완료':'미수행',lack:S.s1.decl?null:'달의 적위를 0°로 바꾸고 섬 하나를 24시간 관찰해 보세요.',stage:'s1'});
+  const sw=S.s2.wrong,spt=S.s2.cleared?Math.max(6,16-2*sw):0;
+  items.push({key:'stickers',area:'Stage 2',name:'사리·조금 날짜 찾기(스티커)',pt:spt,max:16,note:sw?`오답 판정 ${sw}회`:'한 번에 성공',lack:spt<16?'달력 스티커를 처음부터 다시 붙여 한 번에 성공해 보세요.':null,stage:'s2'});
+  const v=S.s2.visited.size,vpt=v>=20?5:Math.floor(v/20*5);
+  items.push({key:'explore',area:'Stage 2',name:'한 달 탐색(방문한 날 수)',pt:vpt,max:5,note:`${v}/30일 방문`,lack:vpt<5?`아직 방문하지 않은 날을 ${20-v}일 이상 더 탐색해 보세요.`:null,stage:'s2'});
+  items.push({key:'phase',area:'Stage 2',name:'사리 때 달의 위상 확인',pt:S.s2.phaseFirst?3:(S.s2.phaseRec?2:0),max:3,note:S.s2.phaseFirst?'한 번에 정답':(S.s2.phaseRec?'보충으로 정답':'오답 후 정답'),lack:S.s2.phaseFirst||S.s2.phaseRec?null:'사리 날의 달 모양(삭·망)을 다시 확인하고 보충 문제를 풀어 보세요.',stage:'s2'});
+  QUIZ.forEach((q,i)=>{const f=S.quiz.first[i],r=S.quiz.recovered[i],pt=f?5:(r?3:0);
+    items.push({key:'quiz_'+i,area:'Stage 3',name:`객관식 ${i+1}`,pt,max:5,note:f?'한 번에 정답':(r?'보충 문제 정답':'오답 후 정답'),lack:(!f&&!r)?`Stage ${q.st} 시뮬레이션을 다시 관찰한 뒤 보충 문제를 풀어 보세요.`:null,stage:'s'+q.st,qi:i});});
+  ['e1','e2'].forEach((k,i)=>{const r=S.essay['r'+(i+1)],pt=r?r.score:0;
+    items.push({key:'ess_'+k,area:'서술형',name:`서술형 ${i+1}`,pt,max:12,note:r?`핵심 요소 ${r.hit.filter(Boolean).length}/3`:'-',lack:pt<12?'아래 피드백을 참고해 답안을 고쳐 다시 평가받아 보세요.':null,stage:'s4'});});
+  return items;
+}
+function gradeOf(t){return t>=90?'A':t>=80?'B':t>=70?'C':t>=60?'D':'F';}
+const GCOL={A:'#0aa58f',B:'#2b7fd8',C:'#7d4cd8',D:'#e17000',F:'#d63031'};
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function narrative(items,total){
+  const n=S.name||'학생',P=S.s1.ports,mins=Math.max(1,Math.round((Date.now()-S.start)/60000));
+  const pw=PORTS.reduce((a,p)=>a+P[p.id].wrong,0),qFirst=QUIZ.filter((_,i)=>S.quiz.first[i]).length;
+  const s1t=`${n} 학생은 Stage 1에서 세 섬의 24시간 해수면 변화를 시간 슬라이더로 끝까지 관찰하여 <span class="r-teal">적도 산호섬은 반일주조, 온대 갯벌섬은 혼합조, 북극 빙하섬은 일주조</span>임을 찾아냈습니다. `+
+    (pw===0?'세 섬 모두 한 번에 정확히 판정하여 그래프의 만조 횟수와 높이를 꼼꼼하게 비교하는 능력이 돋보였습니다. ':`판정 과정에서 ${pw}회의 오답이 있었지만 피드백을 바탕으로 그래프를 다시 비교하여 스스로 수정해 냈습니다. `)+
+    (S.s1.decl?'또한 보너스 실험에서 달의 적위를 0°로 바꾸어 모든 섬이 반일주조에 가까워지는 것을 확인함으로써 <span class="r-purple">위도와 달의 적위가 조석 양상을 결정한다는 원리</span>까지 탐구했습니다.':'다만 달의 적위를 바꾸는 보너스 실험은 수행하지 않아, 조석 양상이 위도에 따라 달라지는 이유까지 확인하지는 못했습니다.')+
+    (S.s1.hints?` (힌트 ${S.s1.hints}회 활용)`:'');
+  const s2t=`Stage 2에서는 달을 ${S.s2.drags?`직접 끌어 공전시키며(${S.s2.drags}회) `:''}한 달 중 ${S.s2.visited.size}일을 방문해 조차 변화를 기록했습니다. `+
+    (S.s2.wrong===0?'사리와 조금 날짜를 한 번에 정확히 찾아 <span class="r-red">일직선 배열일 때 조차 최대</span>, <span class="r-blue">직각 배열일 때 조차 최소</span>라는 관계를 잘 파악했습니다. ':`스티커 판정에서 ${S.s2.wrong}회 수정이 필요했지만, 한 달 그래프의 물결 폭을 비교하여 사리와 조금이 약 15일 간격으로 번갈아 나타남을 찾아냈습니다. `)+
+    (S.s2.phaseFirst?'사리 때 달의 위상이 삭과 망이라는 것도 정확히 연결했습니다.':'사리 때 달의 위상(삭·망)을 연결하는 데에는 한 번 더 확인이 필요했습니다.');
+  const s3t=`Stage 3 객관식 6문항 중 <span class="r-teal">${qFirst}문항</span>을 한 번에 맞혔습니다. `+(qFirst===6?'조석 양상과 사리·조금의 개념을 정확하게 이해하고 있습니다.':`처음에 틀린 문항(${QUIZ.map((_,i)=>i).filter(i=>!S.quiz.first[i]).map(i=>i+1).join(', ')}번)은 피드백을 보고 바로 고쳤지만, 관련 개념을 한 번 더 정리해 두면 좋겠습니다.`);
+  const g=gradeOf(total);
+  const sum={A:'조석 양상과 사리·조금의 원리를 관찰-판정-설명까지 모두 훌륭하게 해냈습니다. 진정한 해양 구조대원입니다!',B:'핵심 개념을 잘 이해했습니다. 아래 보충 미션 몇 가지만 수행하면 A 단계에 도달할 수 있어요.',C:'기본 개념은 파악했지만 일부 과정에서 실수가 있었습니다. 아래 보충 미션으로 부족한 부분을 채워 보세요.',D:'관찰은 했지만 개념 연결이 아직 부족합니다. 보충 미션을 하나씩 수행하며 그래프를 다시 살펴보세요.',F:'아직 미션의 많은 부분이 남아 있어요. 물결이와 함께 보충 미션을 차근차근 수행해 봅시다.'}[g];
+  return{s1t,s2t,s3t,sum,mins};
+}
+function renderResult(){
+  const items=scoreItems(),total=items.reduce((a,b)=>a+b.pt,0),g=gradeOf(total),nar=narrative(items,total);
+  const next={A:null,B:90,C:80,D:70,F:60}[g];
+  const lacks=items.filter(i=>i.lack);
+  const essHtml=['e1','e2'].map((k,i)=>{const r=S.essay['r'+(i+1)];if(!r)return'';const ok=r.hit.filter(Boolean).length;
+    return `<div class="rsec"><h4>서술형 ${i+1} 답안과 피드백 <span class="r-orange">(${r.score}/12점)</span></h4><div class="essbox">${esc(S.essay[k])}</div>
+    <p>${ok===3?'<span class="r-teal">핵심 요소 3가지를 모두 포함한 훌륭한 답안입니다.</span> 관찰한 내용을 과학 용어로 정확하게 설명했어요.':`핵심 요소 3가지 중 ${ok}가지를 포함했습니다. 보완할 점: ${r.miss.join(' ')}`}</p>
+    <p class="r-blue" style="font-size:14px">${ESS[k].model}</p>
+    <div class="noprint" style="margin-top:6px"><textarea id="re_${k}" style="background:#f3f8fd;color:#18324d;border-color:#cfe2f2;min-height:80px">${esc(S.essay[k])}</textarea><button class="btn sm" data-reess="${k}" style="margin-top:4px">고친 답안 다시 평가받기</button></div></div>`;}).join('');
+  $('resultCard').innerHTML=`
+  <div class="rhead"><img src="${LOGO}" alt="logo"><div><h2>🏅 미션 성공! 해양 구조대 활동 보고서</h2><div>${S.sid?esc(S.sid)+' ':''}<span class="r-blue">${esc(S.name)}</span> 대원 · 활동 시간 약 ${nar.mins}분 · ${new Date().toLocaleDateString('ko-KR')}</div><div style="font-size:13px;color:#5d7d99">EARTHLJY 안좌고 지영T · earthljy@ai.jne.kr</div></div>
+  <div class="gradeBadge" style="background:${GCOL[g]}">${g}<small>${total}/100점</small></div></div>
+  <div class="rsec"><h4>종합 평가</h4><p>${nar.sum}</p>${next?`<p class="r-orange">다음 단계(${gradeOf(next)})까지 ${next-total}점이 더 필요해요.</p>`:''}</div>
+  <table class="rtable"><tr><th>영역</th><th>수행 과정</th><th>기록</th><th>점수</th></tr>${items.map(i=>`<tr><td>${i.area}</td><td>${i.name}</td><td>${i.note}</td><td>${i.pt===i.max?`<span class="r-teal">${i.pt}</span>`:`<span class="r-red">${i.pt}</span>`} / ${i.max}</td></tr>`).join('')}</table>
+  <div class="rsec"><h4>수행 과정 피드백</h4><p><span class="r-purple">[Stage 1 바다의 리듬]</span> ${nar.s1t}</p><p><span class="r-purple">[Stage 2 한 달 달력 대작전]</span> ${nar.s2t}</p><p><span class="r-purple">[Stage 3 자격 시험]</span> ${nar.s3t}</p></div>
+  ${essHtml}
+  <div class="rsec noprint"><h4>🔧 등급 올리기 보충 미션 <span style="font-size:14px;color:#5d7d99">(부족한 과정만 다시 수행하면 점수가 올라가요)</span></h4>
+  ${lacks.length?lacks.filter(i=>!i.key.startsWith('ess_')).map(i=>`<div class="supp"><div class="txt"><span class="r-orange">${i.name}</span> (${i.pt}/${i.max}) — ${i.lack}</div><button class="btn sm" data-supp="${i.key}">보충 미션 하기</button></div>`).join('')+(lacks.some(i=>i.key.startsWith('ess_'))?'<div class="supp"><div class="txt"><span class="r-orange">서술형</span> — 위 피드백을 보고 답안을 고친 뒤 [고친 답안 다시 평가받기]를 누르세요.</div></div>':''):'<p class="r-teal">모든 수행 과정을 완벽하게 마쳤어요! 보충할 부분이 없습니다. 🎉</p>'}</div>
+  <div class="rsec"><h4>오늘 배운 핵심 정리</h4><p><span class="r-teal">반일주조</span>: 하루 만조·간조 2번, 높이 비슷(저위도) · <span class="r-orange">일주조</span>: 하루 1번(고위도) · <span class="r-purple">혼합조</span>: 하루 2번이지만 높이가 다름(중위도)<br><span class="r-red">사리(대조)</span>: 삭·망, 달-지구-태양 일직선 → 기조력 합쳐짐 → 조차 최대 · <span class="r-blue">조금(소조)</span>: 상현·하현, 직각 → 기조력 상쇄 → 조차 최소</p></div>`;
+  document.querySelectorAll('[data-supp]').forEach(b=>b.onclick=()=>startSupp(b.dataset.supp));
+  document.querySelectorAll('[data-reess]').forEach(b=>b.onclick=()=>{const k=b.dataset.reess,v=$('re_'+k).value.trim();if(v.length<10){toast('10자 이상 써 주세요.');return;}S.essay[k]=v;S.essay[k==='e1'?'r1':'r2']=evalEssay(k,v);S.essay.revised++;toast('다시 평가했어요!');renderResult();});
+}
+
+/* ============ 보충 미션 ============ */
+function banner(text,quiz){$('suppBanner').style.display='block';$('suppText').innerHTML=text;$('suppQuizBtn').style.display=quiz?'inline-block':'none';}
+function hideBanner(){$('suppBanner').style.display='none';}
+$('suppBack').onclick=()=>{S.supp=null;hideBanner();go('s4');};
+function startSupp(key){
+  S.supp={kind:key};
+  if(key.startsWith('port_')){const id=key.slice(5),p=PORTS.find(x=>x.id===id);S.s1.ports[id].retry=true;S.s1.ports[id].retryWrong=0;s1.decl=DECL0;$('declSlider').value=DECL0;$('declTxt').textContent='28.5°';go('s1');selectPort(id);
+    banner(`🔧 보충 미션: <span style="color:#7a1fa2">${p.name}</span>의 24시간을 다시 관찰하고 한 번에 정확히 판정해 보세요.`);}
+  else if(key==='decl'){go('s1');banner('🔧 보충 미션: 오른쪽 <span style="color:#7a1fa2">달의 적위</span>를 0°로 바꾸고 아무 섬이나 24시간을 끝까지 관찰하세요.');}
+  else if(key==='stickers'){S.s2.stickers={};S.s2.retry=true;S.s2.retryWrong=0;$('fb2').className='fb';go('s2');[...$('cal').children].forEach(el=>el._k=null);updateS2();banner('🔧 보충 미션: 달력 스티커가 초기화되었어요. 한 달 그래프를 다시 보고 사리 2장, 조금 2장을 한 번에 정확히 붙여 보세요.');}
+  else if(key==='explore'){go('s2');banner(`🔧 보충 미션: 방문하지 않은 날을 탐색해 방문한 날을 20일 이상으로 만들어 보세요. (현재 ${S.s2.visited.size}일)`);}
+  else if(key==='phase'){go('s2');setD(16);banner('🔧 보충 미션: 음력 1일과 16일 무렵의 달 모양과 배열을 관찰한 뒤 [보충 문제 풀기]를 누르세요.',true);
+    $('suppQuizBtn').onclick=()=>openSuppQ({q:'사리(대조)일 때 지구에서 본 달의 위상 두 가지는?',o:['상현, 하현','망, 하현','삭, 망','삭, 상현'],a:2},()=>{S.s2.phaseRec=true;suppDone('phase');});}
+  else if(key.startsWith('quiz_')){const i=+key.slice(5),q=QUIZ[i];go('s'+q.st);
+    banner(`🔧 보충 미션: 객관식 ${i+1}번과 관련된 Stage ${q.st} 시뮬레이션을 다시 관찰한 뒤 [보충 문제 풀기]를 누르세요.`,true);
+    const order=[0,1,2,3].sort(()=>Math.random()-.5);
+    $('suppQuizBtn').onclick=()=>openSuppQ({q:q.q,o:order.map(k=>q.o[k]),a:order.indexOf(q.a),fb:q.ex},()=>{S.quiz.recovered[i]=true;suppDone(key);});}
+}
+function openSuppQ(q,onOk){
+  const m=$('modal'),c=$('modalCard');
+  c.innerHTML=`<h3>보충 문제</h3><div class="qq" style="margin:6px 0 10px">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}">${'①②③④'[j]} ${o}</button>`).join('')}</div><div class="fb" id="mfb"></div><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn ghost sm" id="mclose">닫기</button></div>`;
+  m.classList.add('show');$('mclose').onclick=()=>m.classList.remove('show');
+  let tried=false;
+  c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(tried)return;tried=true;const j=+b.dataset.j;
+    if(j===q.a){b.classList.add('right');showFb('mfb','ok','✅ 정답! 보충 미션 성공. '+(q.fb||''));setTimeout(()=>{m.classList.remove('show');onOk();},1300);}
+    else{b.classList.add('wrong');showFb('mfb','no','❌ 아쉬워요. 시뮬레이션을 한 번 더 관찰한 뒤 다시 도전하세요.');setTimeout(()=>m.classList.remove('show'),1600);}});
+}
+function suppDone(key){
+  if(!S.supp||S.supp.kind!==key)return;
+  banner('✅ 보충 미션 완료! 점수가 반영되었어요. [결과 화면으로 돌아가기]를 눌러 새 등급을 확인하세요.');S.supp={kind:'done'};toast('보충 미션 완료! 🎉');
+}
+
+/* ============ PNG 저장 ============ */
+function wrapText(c,text,x,y,maxW,lh){const plain=text.replace(/<[^>]+>/g,'');let line='',yy=y;for(const ch of plain){if(ch==='\n'){c.fillText(line,x,yy);line='';yy+=lh;continue;}const t=line+ch;if(c.measureText(t).width>maxW){c.fillText(line,x,yy);line=ch;yy+=lh;}else line=t;}if(line){c.fillText(line,x,yy);yy+=lh;}return yy;}
+$('dlPng').onclick=()=>{
+  const items=scoreItems(),total=items.reduce((a,b)=>a+b.pt,0),g=gradeOf(total),nar=narrative(items,total);
+  const W=1100,cv=document.createElement('canvas');cv.width=W;cv.height=3200;const c=cv.getContext('2d');
+  c.fillStyle='#ffffff';c.fillRect(0,0,W,3200);
+  const hg=c.createLinearGradient(0,0,W,0);hg.addColorStop(0,'#0a7f74');hg.addColorStop(1,'#2b6fd1');c.fillStyle=hg;c.fillRect(0,0,W,150);
+  const img=new Image();img.onload=()=>{
+    c.drawImage(img,W-140,15,120,120);
+    c.fillStyle='#fff';c.font=F(34);c.fillText('미션 성공! 해양 구조대 활동 보고서',40,62);
+    c.font=F(19);c.fillText(`${S.sid?S.sid+' ':''}${S.name} 대원 · 조석 양상과 사리·조금 · ${new Date().toLocaleDateString('ko-KR')}`,40,100);
+    c.font=F(15);c.fillText('EARTHLJY 안좌고 지영T · earthljy@ai.jne.kr',40,130);
+    c.fillStyle=GCOL[g];c.beginPath();c.arc(W-110,240,70,0,7);c.fill();c.fillStyle='#fff';c.font=F(68);c.textAlign='center';c.fillText(g,W-110,258);c.font=F(16);c.fillText(total+' / 100점',W-110,290);c.textAlign='left';
+    let y=200;c.fillStyle='#0a7f74';c.font=F(22);c.fillText('종합 평가',40,y);y+=34;c.fillStyle='#18324d';c.font=F(17);y=wrapText(c,nar.sum,40,y,W-260,28)+10;
+    y=Math.max(y,330);c.fillStyle='#0a7f74';c.font=F(22);c.fillText('수행 과정별 점수',40,y);y+=16;
+    c.font=F(15);items.forEach((it,i)=>{const yy=y+i*30;c.fillStyle=i%2?'#f3f8fd':'#fff';c.fillRect(40,yy,W-80,30);c.fillStyle='#2b5b85';c.fillText(it.area,52,yy+21);c.fillStyle='#18324d';c.fillText(it.name,170,yy+21);c.fillStyle='#5d7d99';c.fillText(it.note,560,yy+21);c.fillStyle=it.pt===it.max?'#0a8f80':'#d63031';c.fillText(it.pt+' / '+it.max,W-150,yy+21);});
+    y+=items.length*30+40;
+    [['Stage 1 바다의 리듬',nar.s1t],['Stage 2 한 달 달력 대작전',nar.s2t],['Stage 3 자격 시험',nar.s3t]].forEach(([h,t])=>{c.fillStyle='#7d4cd8';c.font=F(19);c.fillText(h,40,y);y+=28;c.fillStyle='#18324d';c.font=F(16);y=wrapText(c,t,40,y,W-80,26)+14;});
+    ['e1','e2'].forEach((k,i)=>{const r=S.essay['r'+(i+1)];if(!r)return;c.fillStyle='#2b6fd1';c.font=F(19);c.fillText(`서술형 ${i+1} (${r.score}/12점)`,40,y);y+=28;
+      c.fillStyle='#f3f8fd';const startY=y;c.font=F(16);const tmp=document.createElement('canvas').getContext('2d');tmp.font=F(16);
+      c.fillStyle='#18324d';y=wrapText(c,'답안: '+S.essay[k],56,y,W-112,26);
+      c.fillStyle=r.hit.every(Boolean)?'#0a8f80':'#e17000';y=wrapText(c,r.hit.every(Boolean)?'피드백: 핵심 요소를 모두 포함한 훌륭한 답안입니다.':'피드백: '+r.miss.join(' '),56,y+4,W-112,26)+12;});
+    const lacks=items.filter(i=>i.lack);
+    if(lacks.length){c.fillStyle='#e17000';c.font=F(19);c.fillText('등급을 올리려면 이 보충 미션을 해 보세요',40,y);y+=28;c.fillStyle='#18324d';c.font=F(15);lacks.forEach(i=>{y=wrapText(c,'· '+i.name+' — '+i.lack,52,y,W-100,24);});y+=10;}
+    c.fillStyle='#cfe2f2';c.fillRect(40,y,W-80,2);y+=30;c.fillStyle='#5d7d99';c.font=F(14);c.fillText('반일주조(하루 2번·높이 비슷) · 일주조(하루 1번) · 혼합조(하루 2번·높이 다름) · 사리(삭·망, 일직선) · 조금(상현·하현, 직각)',40,y);y+=30;
+    const out=document.createElement('canvas');out.width=W;out.height=y;out.getContext('2d').drawImage(cv,0,0);
+    const a=document.createElement('a');a.download=`해양구조대_${S.sid||''}${S.name}_${g}.png`;a.href=out.toDataURL('image/png');a.click();toast('결과 이미지를 저장했어요!');
+  };img.src=LOGO;
+};
+$('dlPdf').onclick=()=>{toast('인쇄 창에서 [PDF로 저장]을 선택하세요.');setTimeout(()=>window.print(),300);};
+
+/* ============ 시작 ============ */
+renderPorts();computeExt();markBins(0,0);renderQuiz();renderPhaseQ();S.s2.visited.add(1);
+document.querySelector('[data-spd="4"]').classList.add('sel');
+(function anim(){if(current==='s1'&&!s1.playing)drawHarbor();requestAnimationFrame(anim);})();
+window.addEventListener('resize',()=>{});
+</script>
+</body>
+</html>
